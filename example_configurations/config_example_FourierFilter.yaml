@@ -1,0 +1,26 @@
+#  --in_data <string> ""
+# The input data file.
+in_data: ""
+
+#  --out_data <string> ""
+# The output data file.
+out_data: ""
+
+#  --var <string> ""
+# A comma-delimited list of variable(s) to apply the filtering to.
+var: "temperature,pressure"
+
+#  --preserve <string> ""
+# A comma-delimited list of variable(s) that should be copied from input file
+# to output directly.
+preserve: "humidity,wind_speed"
+
+#  --dim <string> ""
+# The name of the dimension to apply the filter to.
+dim: "time"
+
+#  --modes <integer> ""
+# The number of modes to retain from filtering. A value of 1 indicates that
+# only the mean should be maintained, 2 indicates the mean and the longest
+# wavelength mode are maintained, etc.
+modes: 1

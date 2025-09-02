@@ -1,0 +1,57 @@
+#  --in_file <string> ""
+# The input data file containing a binary or indexed mask variable (typically
+# output from DetectBlobs or StitchBlobs).
+in_file: ""
+
+#  --in_list <string> ""
+# A text file containing a list of input data files. Only one of --in_file or
+# --in_list may be specified.
+in_list: ""
+
+#  --findblobs <string> ""
+# If data is a binary mask variable, this argument will use the flood fill
+# algorithm to identify contiguous patches and assign them a unique index at
+# each time. This does not connect blobs together in time, which requires use
+# of StitchBlobs.
+findblobs: ""
+
+#  --in_connect <string> ""
+# A connectivity file that describes the unstructured grid.
+in_connect: ""
+
+#  --diag_connect <bool>
+# When the data is on a structured grid, consider grid cells to be connected
+# in the diagonal (across the vertex).
+diag_connect: false
+
+#  --regional <bool>
+# Used to indicate that a given latitude-longitude grid should not be periodic
+# in the longitudinal direction.
+regional: false
+
+#  --out_file <string> ""
+# The output text file containing summary statistics about each blob.
+out_file: ""
+
+#  --var <string> ""
+# The name of the binary or indexed mask variable in the input file(s).
+var: "blob_mask_variable"
+
+#  --sumvar <string> ""
+# A comma delimited list of variables which are summed over each blob and
+# written to the output, weighted by the associated gridpoint area.
+sumvar: "precipitation,temperature"
+
+#  --out <string> ""
+# A comma delimited list of output quantities to write to the summary file.
+# Options include:
+# minlat, maxlat, minlon, maxlon, meanlon, meanlat, centlon, centlat, area.
+out: "minlat,maxlat,minlon,maxlon,area,centlat,centlon"
+
+#  --out_headers <bool>
+# Output headers to describe each column in the data.
+out_headers: true
+
+#  --out_fulltime <bool>
+# Output the full timestamp on each line.
+out_fulltime: true

@@ -1,0 +1,88 @@
+#  --in_nodefile <string> ""
+# The filename of the input nodefile (typically output from DetectNodes or
+# StitchNodes).
+in_nodefile: ""
+
+#  --in_nodefile_type <string> ["SN"] [DN|SN]
+# The type of nodefile indicated by --in_nodefile: "DN" if from DetectNodes or
+# "SN" if from StitchNodes.
+in_nodefile_type: "SN"
+
+#  --in_data <string> ""
+# The input data file (if needed for supplemental calculations).
+in_data: ""
+
+#  --in_data_list <string> ""
+# A list of input data files (if needed for supplemental calculations).
+in_data_list: ""
+
+#  --in_connect <string> ""
+# A connectivity file that describes the unstructured grid.
+in_connect: ""
+
+#  --diag_connect <bool>
+# When the data is on a structured grid, consider grid cells to be connected in
+# the diagonal (across the vertex).
+diag_connect: false
+
+#  --regional <bool>
+# Used to indicate that a given latitude-longitude grid should not be periodic
+# in the longitudinal direction.
+regional: false
+
+#  --in_fmt <string> ""
+# A comma-separated list of names of the columns within the input nodefile.
+in_fmt: ""
+
+#  --out_fmt <string> ""
+# A comma-separated list of names of the columns within the output nodefile.
+out_fmt: ""
+
+#  --out_nodefile <string> ""
+# The filename of the output nodefile.
+out_nodefile: ""
+
+#  --out_nodefile_format <string> [gfdl|csv|csvnohead]
+# The format of the output nodefile. Options are gfdl (standard GFDL format),
+# csv (comma-separated values with header), and csvnohead (comma-separated
+# values with no header).
+out_nodefile_format: "gfdl"
+
+#  --timefilter <string> ""
+# A regular expression used to match only those time values to be retained.
+# Several default values are available as well as follows.
+# -> 3hr filter every 3 hourly (equivalent to "....-..-.. (00|03|06|09|12|15|18|21):00:00").
+# -> 6hr filter every 6 hourly (equivalent to "....-..-.. (00|06|12|18):00:00").
+# -> daily filter daily (equivalent to "....-..-.. 00:00:00").
+timefilter: ""
+
+#  --colfilter <string> "<cmd1>;<cmd2>;..."
+# Filter lines in the nodefile based on a prescribed threshold. Each output
+# command takes the form "col,op,value". These arguments are as follows.
+# -> col <string> is the name of the column to be used, as specified in
+#    --in_fmt.
+# -> op <string> is the operator that is applied over all points within the
+#    specified distance of the candidate (options include >,>=,<,<=,=,!=).
+# -> value <double> is the value on the right-hand-side of the comparison.
+colfilter: "col1,>,0.5;col2,<=,3.0"
+
+#  --calculate <string> "<cmd1>;<cmd2>;..."
+# Perform functional operations on rows of the nodefile. Commands are specified
+# in the form output=function(arguments), separated by semi-colons and
+# evaluated from left to right. Examples of operations include:
+# -> eval_ace(<u variable name>, <v variable name>, <radius>)
+#    Evaluate the (instantaneous) cyclone energy using zonal and meridional
+#    velocity and radius.
+# -> radial_profile(<variable name>, <bin count>, <bin width>)
+#    Calculate the radial profile of a variable.
+# -> max_closed_contour_delta(<variable name>, <radius>)
+#    Calculate the largest closed contour delta value around the nodal feature.
+calculate: "output1=eval_ace(u,v,10.0);output2=radial_profile(var,5,1.0);output3=max_closed_contour_delta(psl,5.5)"
+
+#  --lonname <string> ""
+# Name of the longitude variable in the data files.
+lonname: ""
+
+#  --latname <string> ""
+# Name of the latitude variable in the data files.
+latname: ""

@@ -1,0 +1,121 @@
+#  --in_nodefile <string> ""
+# The filename of the input nodefile (typically output from DetectNodes or
+# StitchNodes).
+in_nodefile: ""
+
+#  --in_nodefile_type <string> ["SN"] [DN|SN]
+# The type of nodefile indicated by --in_nodefile: "DN" if from DetectNodes or
+# "SN" if from StitchNodes.
+in_nodefile_type: "SN"
+
+#  --in_fmt <string> ""
+# A comma-separated list of names of the columns within the input nodefile.
+in_fmt: ""
+
+#  --in_data <string> ""
+# The input data file.
+in_data: ""
+
+#  --in_data_list <string> ""
+# A text file containing a list of input data files.
+in_data_list: ""
+
+#  --in_connect <string> ""
+# A connectivity file that describes the unstructured grid.
+in_connect: ""
+
+#  --diag_connect <bool>
+# When the data is on a structured grid, consider grid cells to be connected in
+# the diagonal (across the vertex).
+diag_connect: false
+
+#  --regional <bool>
+# Used to indicate that a given latitude-longitude grid should not be periodic
+# in the longitudinal direction.
+regional: false
+
+#  --out_grid <string> [XY|RAD|RLL]
+# The type of grid to use as output. Options are as follows:
+# -> XY: Cartesian stereographic projection with eastwards X coordinate vector
+#    and northwards Y coordinate vector. Grid spacing is equidistant.
+# -> RAD: Radial stereographic projection with azimuthal coordinate vector and
+#    radial coordinate vector. Azimuthal grid spacing is equiangular; radial
+#    grid spacing is equidistant.
+# -> RLL: Regular longitude-latitude projection, only available for fixed
+#    position grids (where --fixlon and --fixlat are specified).
+out_grid: "XY"
+
+#  --out_data <string> ""
+# The output data file.
+out_data: ""
+
+#  --var <variable> ""
+# A comma-separated list of variables that will be processed by this command.
+var: ""
+
+#  --varout <string> ""
+# An optional comma-separated list of variables of the same length as --var
+# that replaces these variables in the output data. By default this argument is
+# identical to --var.
+varout: ""
+
+#  --snapshots
+# Output a concatenated array to --out_data consisting of snapshots of the
+# regridded data at each time slice. The output will be written to the output
+# data file with variable name "<varout>_snapshots".
+snapshots: false
+
+#  --op <string> [mean|min|max,...]
+# A comma-separated list of reduction operations to perform on the data. The
+# output will be written to the output data file with variable name
+# "<varout>_<op>" where <op> is the specified operation.
+# -> mean: Calculate the grid point mean over all composited snapshots.
+# -> min: Calculate the grid point minimum over all composited snapshots.
+# -> max: Calculate the grid point maximum over all composited snapshots.
+op: "mean,min,max"
+
+#  --histogram <string> [var,offset,binsize]
+# Bin data at each grid point from variable var into a histogram. Bins are
+# equal sized with width binsize, and with the first bin occupying the interval
+# [offset,offset+binsize]. Results are stored as a sparse array with name
+# "<varout>_hist".
+histogram: ""
+
+#  --dx <double> [0.5]
+# The horizontal grid spacing of the XY grid or the radial grid spacing on the
+# RAD grid (in great circle degrees). Also the horizontal grid spacing of the
+# RLL grid (in degrees).
+dx: 0.5
+
+#  --resx <integer> [11]
+# The number of grid cells in each coordinate direction on the XY or RLL grid,
+# or the number of grid cells in the radial direction on the RAD grid.
+resx: 11
+
+#  --resa <integer> [16]
+# The number of grid cells in the azimuthal direction on the RAD grid.
+resa: 16
+
+#  --fixlon <double> [-999.0]
+# The fixed geographic longitude (center of the grid) for composites or
+# snapshots. If set to -999, then this argument is ignored.
+fixlon: -999.0
+
+#  --fixlat <double> [-999.0]
+# The fixed geographic latitude (center of the grid) for composites or
+# snapshots. If set to -999, then this argument is ignored.
+fixlat: -999.0
+
+#  --max_time_delta <string> ""
+# A string of the form [#d][#h][#m][#s] indicating the maximum time difference
+# where data could be substituted when not available at the time specified in
+# the nodefile. For example: "1h30m".
+max_time_delta: ""
+
+#  --lonname <string> ""
+# Name of the longitude variable in the data files.
+lonname: ""
+
+#  --latname <string> ""
+# Name of the latitude variable in the data files.
+latname: ""

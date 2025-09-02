@@ -1,0 +1,54 @@
+#  --in_data <string> ""
+# The input data file.
+in_data: ""
+
+#  --in_data_list <string> ""
+# A text file containing a list of input data files. Only one of --in_data or
+# --in_data_list may be specified.
+in_data_list: ""
+
+#  --out_data <string> ""
+# The processed output data file.
+out_data: ""
+
+#  --var <string> ""
+# The name of the variable in the input file providing the binary tag.
+var: "binary_tag_variable"
+
+#  --memmax <string> "2G"
+# The maximum amount of memory to use for storage of the working data arrays.
+# Specified as #K (kilobytes), #M (megabytes), or #G (gigabytes).
+memmax: "2G"
+
+#  --period <string> "daily"
+# The type of climatological mean to calculate. Options include daily, monthly,
+# seasonal, or annual.
+period: "daily"
+
+#  --type <string> "mean"
+# The type of statistical calculation to perform. Options include:
+# -> mean: Mean value calculation.
+# -> meansq: Mean of squares (used in calculating the variance).
+type: "mean"
+
+#  --include_leap_days <bool>
+# Include leap days in the statistical calculation. By default, leap days are
+# skipped since the sample size tends to be smaller.
+include_leap_days: false
+
+#  --missingdata <bool>
+# Indicates that the input data contains missing values.
+missingdata: false
+
+#  --temp_file_path <string> "."
+# The path to use for storing temporary files.
+temp_file_path: "./"
+
+#  --keep_temp_files <bool>
+# If set to true, temporary files will not be deleted after the calculation
+# completes.
+keep_temp_files: false
+
+#  --verbose <bool>
+# Enable verbose output.
+verbose: false
