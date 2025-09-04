@@ -59,7 +59,7 @@ maxlat: 90.0
 #  --minabslat <double> [0.0]
 # The minimum absolute value of the latitude for tagged points. Has no effect
 # if set to zero.
-minabslat: 0.0
+minabslat: 20.0
 
 #  --regional <bool>
 # Used to indicate that a given latitude-longitude grid should not be periodic

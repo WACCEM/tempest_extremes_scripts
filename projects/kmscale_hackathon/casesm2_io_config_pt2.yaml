@@ -9,7 +9,7 @@ patterns:
 pattern_match: '(PT3H.\d{6})'  # Regular expression
 
 # input_list specified the name of the text file 
-in_data_list: '/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/casesm2_10km_nocumulus_testpy/casesm2_10km_nocumulus.input_pr_ws.txt'  # Placeholder for dynamic content
+in_data_list: '/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/casesm2_10km_nocumulus_tracking/casesm2_10km_nocumulus.input_pr_ws.txt'  # Placeholder for dynamic content
 
 # a static file can be used for time invariant variables like elevation that may need to be specified, but exist in a single file
 # this file gets appended to each line within input_list

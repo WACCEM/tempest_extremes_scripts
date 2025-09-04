@@ -4,7 +4,7 @@ shortname: 'icon_d3hp003_hp8'
 
 # output_dir <string>
 # Specify the path to save files to (required)
-output_dir: '/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/icon_d3hp003_1year_testpy/'
+output_dir: '/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/icon_d3hp003_1year_tracking/'
 
 # --in_data <string> ""
 # A list of input data files in NetCDF format, separated by semicolons.
@@ -14,7 +14,7 @@ in_data: ''
 # A text file containing the --in_data argument for a sequence of processing
 # operations (one per line). When parallelization is enabled, the list of data
 # files are distributed as equally as possible among available processors.
-in_data_list: '/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/icon_d3hp003_1year_testpy/icon_d3hp003_hp8.input.txt'
+in_data_list: '/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/icon_d3hp003_1year_tracking/icon_d3hp003_hp8.input.txt'
 
 # --in <string> ""
 # The input nodefile (typically output from from DetectNodes).
