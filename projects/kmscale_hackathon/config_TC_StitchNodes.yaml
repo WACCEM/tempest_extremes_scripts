@@ -47,7 +47,7 @@ maxgap: 6
 #    satisfied only at the first point along the path, and "last" is used to
 #    indicate the threshold must be satisfied only at the last point along the
 #    path.
-threshold: "wind,>=,10.0,20;lat,<=,50.0,20;lat,>=,-50.0,20;zs,<=,15.0,20"
+threshold: "wind,>=,10.0,10;lat,<=,50.0,10;lat,>=,-50.0,10;zs,<=,15.0,10"
 
 #  --out_file_format <string> "gfdl" (gfdl|csv|csvnohead)
 # The format of the output nodefile. Options are gfdl (standard GFDL format),
