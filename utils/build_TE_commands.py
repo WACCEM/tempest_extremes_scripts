@@ -6,13 +6,22 @@ def build_VariableProcessor_command(config):
         "VariableProcessor",
         "--in_data",             f"{config['in_data']}",
         "--in_data_list",        f"{config['in_data_list']}",
-        "--out",                 f"{config['out']}",
+        "--in_connect",          f"{config['in_connect']}",
+        "--out_data",            f"{config['out_data']}",
         "--out_file_list",       f"{config['out_file_list']}",
+        "--preserve",            f"{config['preserve']}",
         "--var",                 f"{config['var']}",
         "--varout",              f"{config['varout']}",
+        "--timefilter",          f"{config['timefilter']}",
+        "--fillvalue",           f"{config['fillvalue']}",
         "--lonname",             f"{config['lonname']}",
         "--latname",             f"{config['latname']}",
+        "--logdir",              f"{config['logdir']}",
     ]
+    if config['diag_connect']:
+        cmd.append("--diag_connect")
+    if config['regional']:
+        cmd.append("--regional")
     return cmd
 
 def build_DetectNodes_command(config):
