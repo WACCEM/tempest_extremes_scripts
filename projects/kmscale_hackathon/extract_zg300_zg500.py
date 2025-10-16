@@ -35,8 +35,12 @@ def extract_zg300_zg500(input_file, output_file):
             level_300, level_500 = 30000, 50000
             
         # Extract zg300 and zg500 data
-        zg300 = ds['zg'].sel(lev=level_300, method='nearest').drop_vars('lev')
-        zg500 = ds['zg'].sel(lev=level_500, method='nearest').drop_vars('lev')
+        try:
+            zg300 = ds['zg'].sel(lev=level_300, method='nearest').drop_vars('lev')
+            zg500 = ds['zg'].sel(lev=level_500, method='nearest').drop_vars('lev')
+        except KeyError:
+            zg300 = ds['zg'].sel(pressure=level_300, method='nearest').drop_vars('pressure')
+            zg500 = ds['zg'].sel(pressure=level_500, method='nearest').drop_vars('pressure')
         
         # Log which levels were actually selected
         print(f"Selected level for 300 hPa: {ds['lev'].sel(lev=level_300, method='nearest').values}")

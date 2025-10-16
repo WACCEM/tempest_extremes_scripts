@@ -98,7 +98,7 @@ outputcmd: "psl,min,0;sfcWind,max,2;ELEV,min,0;pr,avg,4"
 # "....-..-.. (00|03|06|09|12|15|18|21):00:00").
 # 6hr filter every 6 hourly (equivalent to "....-..-.. (00|06|12|18):00:00").
 # daily filter daily (equivalent to "....-..-.. 00:00:00").
-timefilter: '3hr'
+timefilter: '6hr'
 
 #  --latname <string> "lat"
 latname: 'lat'
