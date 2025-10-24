@@ -79,3 +79,11 @@ invert: false
 # 6hr filter every 6 hourly (equivalent to "....-..-.. (00|06|12|18):00:00").
 # daily filter daily (equivalent to "....-..-.. 00:00:00").
 timefilter: "6hr"
+
+#  --lonname <string> "lon"
+# Name of the longitude variable in the data files.
+lonname: "lon"
+
+#  --latname <string> "lat"
+# Name of the latitude variable in the data files.
+latname: "lat"

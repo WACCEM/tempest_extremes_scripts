@@ -1,0 +1,123 @@
+# shortname <string>
+# Specify a name to use for naming files (required)
+shortname: 'era5'
+
+# output_dir <string>
+# Specify the path to save files to (required)
+output_dir: '/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/era5_tracking/'
+
+# --in_data <string> ""
+# A list of input data files in NetCDF format, separated by semicolons.
+in_data: ''
+
+#  --in_data_list <string> ""
+# A text file containing the --in_data argument for a sequence of processing
+# operations (one per line). When parallelization is enabled, the list of data
+# files are distributed as equally as possible among available processors.
+in_data_list: '/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/era5_tracking/era5.input.txt'
+
+# --in <string> ""
+# The input nodefile (typically output from from DetectNodes).
+in: ''
+
+# --in_nodefile <string> ""
+# The filename of the input nodefile (typically output from
+# DetectNodes or StitchNodes).
+in_nodefile: ''
+
+#  --in_nodefile_type <string> ["SN"] [DN|SN]
+# The type of nodefile indicated by --in_nodefile: "DN" if from DetectNodes
+# or "SN" if from StitchNodes.
+in_nodefile_type: ''
+
+#  --in_list <string> ""
+# A text file containing a list of input data files.
+in_list: ''
+
+#  --in_connect <string> ""
+#A connectivity file that describes the unstructured grid.
+in_connect: ''
+
+#  --diag_connect <bool>
+# When the data is on a structured grid, consider grid cells to be connected in
+# the diagonal (across the vertex).
+diag_connect: ''
+
+# The following output stuff is set dynamically by the script... consider removing
+
+#  --out <string> ""
+# The output nodefile to write from the detection procedure.
+# Used when --in_data is specified.
+out: ''
+
+#  --out_file_list <string> ""
+# A text file containing an equal number of lines to --in_data_list specifying
+# the output nodefiles from each input datafile.
+out_file_list: ''
+
+# --out_list <string> ""
+# A text file containing, one per line, a list of output NetCDF files corresponding to the input files specified in --in_list or --in_data_list
+out_list: ''
+
+# --out_data_list <string> ""
+# A list of output data files, of the corresponding output for each file of --in_data_list
+out_data_list: ''
+
+# --out_data <string> ""
+# The output data file
+out_data: ''
+
+# The following arguments are not inputs directly to TE binaries
+
+# patterns lists the types where there are multiple files
+patterns:
+    - '/global/cfs/cdirs/m3522/cmip6/ERA5/e5.oper.an.pl/202001/e5.oper.an.pl.128_129_z.ll025sc.2020010100_2020010123.nc'
+
+# pattern match specifies the pattern that changes between each file
+pattern_match: '(ll025sc.\d{10}_\d{10})'  # Regular expression
+
+# a static file can be used for time invariant variables like elevation that may need to be specified, but exist in a single file
+# this file gets appended to each line within input_list
+static_file: '/pscratch/sd/b/beharrop/kmscale_hackathon/ERA5_tracking/e5.oper.invariant.Zs.ll025sc.nc'
+
+# matching_mode can be 'simple' or 'era5_datalake'.  If the latter, patterns
+# and pattern_match are only used for transforming the file lists into the TE
+# binary outputs.  The entries below are used to establish the input file list.
+matching_mode: 'era5_datalake'
+
+# For the NERSC data lake, the input files for generating lists are quite different
+
+# era5_start_month provides the YYYYMM month to start using the ERA5 data (in range 195001-202412)
+era5_start_month: '201908'
+
+# era5_final_month provides the YYYYMM month to finish using the ERA5 data (in range 195001-202412)
+era5_final_month: '202103'
+
+variables_pl:
+    - '128_129_z'
+
+variables_sfc:
+    - '128_151_msl'
+    - '128_165_10u'
+    - '128_166_10v'
+
+variables_vinteg:
+    - '162_071_viwve'
+    - '162_072_viwvn'
+
+tp_timescale: '6h'
+
+# the crs file contains metadata for the healpix grid and can be appended during file cleanup
+crs_file: ''
+
+# file cleanup arguments
+do_file_cleanup: true
+
+# do_append_crs - appends healpix metadata to all files
+do_append_crs: false
+
+# do_unify_dimensions - if both cell and ncol are created, then rename ncol to cell
+do_unify_dimensions: false
+
+# do_open_permissions - opens up read permissions for all users
+do_open_permissions: true

@@ -1,0 +1,38 @@
+# If all inputs are in a single file, simply specify input_file
+in_data: ''  # Empty string
+
+# patterns lists the types where there are multiple files
+patterns:
+    - '/global/cfs/cdirs/m3522/cmip6/ERA5/e5.oper.an.pl/??????/e5.oper.an.pl.128_138_vo.ll025sc.??????????_??????????.nc'
+
+# pattern match specifies the pattern that changes between each file
+pattern_match: '(pl/\d{6}/e5.oper.an.pl.128_138_vo.ll025sc.\d{10}_\d{10})'  # Regular expression
+
+# matching_mode can be 'simple' or 'era5_datalake'.  If the latter, patterns
+# and pattern_match are only used for transforming the file lists into the TE
+# binary outputs.  The entries below are used to establish the input file list.
+matching_mode: 'era5_datalake'
+
+# For the NERSC data lake, the input files for generating lists are quite different
+
+# era5_start_month provides the YYYYMM month to start using the ERA5 data (in range 195001-202412)
+era5_start_month: '201908'
+
+# era5_final_month provides the YYYYMM month to finish using the ERA5 data (in range 195001-202412)
+era5_final_month: '202103'
+
+variables_pl:
+    - '128_138_vo'
+
+variables_sfc: ''
+
+variables_vinteg: ''
+
+tp_timescale: ''
+
+# input_list specified the name of the text file 
+in_data_list: '/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/era5_tracking/era5.input_pr_ws.txt'  # Placeholder for dynamic content
+
+# a static file can be used for time invariant variables like elevation that may need to be specified, but exist in a single file
+# this file gets appended to each line within input_list
+static_file: ''

@@ -83,6 +83,10 @@ def load_config_and_generate_files(config_file):
     """
     # Load configuration from YAML file
     input_config = load_yaml_file(config_file)
+    
+    # Make sure output directory exists if it is specified
+    if 'output_dir' in input_config:
+        ensure_dir(input_config['output_dir'])
         
     # Generate file lists
     if os.path.exists(input_config['in_data_list']):
@@ -92,9 +96,12 @@ def load_config_and_generate_files(config_file):
     if input_config['static_file'] == "":
         input_config['static_file'] = None
 
+
     if input_config['in_data_list']:
-        generate_file_list(input_config['patterns'], input_config['in_data_list'], 
-                           input_config['pattern_match'], static_file=input_config['static_file'])
+        # generate_file_list(input_config['patterns'], input_config['in_data_list'], 
+        #                    input_config['pattern_match'], static_file=input_config['static_file'],
+        #                    era5_start_month=era5_start_month, era5_final_month=era5_final_month)
+        generate_file_list(input_config['in_data_list'], input_config)
         
     return input_config
 

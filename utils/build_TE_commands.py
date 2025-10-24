@@ -47,6 +47,8 @@ def build_DetectNodes_command(config):
         "--outputcmd",           f"{config['outputcmd']}",
         "--timefilter",          f"{config['timefilter']}",
         "--verbosity",           f"{config['verbosity']}",
+        "--lonname",             f"{config['lonname']}",
+        "--latname",             f"{config['latname']}",
     ]
     if config['diag_connect']:
         cmd.append("--diag_connect")
@@ -119,6 +121,8 @@ def build_NodeFileFilter_command(config):
         "--bycontour",           f"{config['bycontour']}",
         "--nearbyblobs",         f"{config['nearbyblobs']}",
         "--timefilter",          f"{config['timefilter']}",
+        "--lonname",             f"{config['lonname']}",
+        "--latname",             f"{config['latname']}",
     ]
     if config['diag_connect']:
         cmd.append("--diag_connect")

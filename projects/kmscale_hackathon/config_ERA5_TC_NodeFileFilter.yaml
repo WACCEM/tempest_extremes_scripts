@@ -19,7 +19,7 @@ regional: false
 
 #  --var <variable> ""
 # A comma-separated list of variables to filter and write to the output.
-var: "pr,sfcWind"
+var: ""
 
 #  --maskvar <string> ""
 # The name of the variable to write to the output file containing the binary
@@ -80,10 +80,8 @@ invert: false
 # daily filter daily (equivalent to "....-..-.. 00:00:00").
 timefilter: "6hr"
 
-#  --lonname <string> "lon"
-# Name of the longitude variable in the data files.
-lonname: "lon"
-
 #  --latname <string> "lat"
-# Name of the latitude variable in the data files.
-latname: "lat"
+latname: 'latitude'
+
+#  --lonname <string> "lon"
+lonname: 'longitude'

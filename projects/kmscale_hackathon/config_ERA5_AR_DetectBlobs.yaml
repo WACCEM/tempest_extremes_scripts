@@ -1,0 +1,83 @@
+#  --diag_connect <bool>
+# When the data is on a structured grid, consider grid cells to be connected
+# in the diagonal (across the vertex).
+diag_connect: false
+
+#  --thresholdcmd <string> "<cmd1>;<cmd2>;..."
+# Tag grid points that satisfy a threshold criteria. Threshold commands are
+# separated by a semicolon. Each threshold command takes the form
+# "var,op,value,dist". The arguments are:
+# -> var <variable>: Name of the variable used for thresholding.
+# -> op <string>: Operator (options include >,>=,<,<=,=,!=).
+# -> value <double>: Value on the right-hand side of the comparison.
+# -> dist <double>: Great-circle distance for the threshold search.
+thresholdcmd: "_LAPLACIAN{8,10.0}(_VECMAG(VIWVE,VIWVN)),<=,-30000,0"
+
+#  --filtercmd <string> "<cmd1>;<cmd2>;..."
+# Filter out contiguous regions (blobs) that do not satisfy a minimum count of
+# points satisfying a threshold. Commands are specified as
+# "var,op,value,count" with the following arguments:
+# -> var <variable>: Name of the variable used for filtering.
+# -> op <string>: Operator (options include >,>=,<,<=,=,!=).
+# -> value <double>: Value on the right-hand side of the comparison.
+# -> count <integer>: Minimum number of grid points satisfying the filter.
+filtercmd: ""
+
+#  --geofiltercmd <string> "<cmd1>;<cmd2>;..."
+# Filter out contiguous regions (blobs) that do not satisfy some geometric
+# property. Commands are specified as "prop,op,value" with the following
+# arguments:
+# -> prop <string>: One of "area" or "areafrac".
+# -> op <string>: Operator (options include >,>=,<,<=,=,!=).
+# -> value <double>: Value on the right-hand side of the comparison.
+geofiltercmd: "area,>,850000km2"
+
+#  --outputcmd <string> "<cmd1>;<cmd2>;..."
+# Include additional data in the output file. Each output command takes the
+# form "var,varout" with the following arguments:
+# -> var <variable>: Input variable used for output.
+# -> varout <string>: Name of the variable to write in the output file.
+outputcmd: ""
+
+#  --timefilter <string> ""
+# A regular expression used to match only those time values to be retained.
+# Default values:
+# -> 3hr: Filter every 3 hourly (equivalent to "....-..-.. (00|03|06|09|12|15|18|21):00:00").
+# -> 6hr: Filter every 6 hourly (equivalent to "....-..-.. (00|06|12|18):00:00").
+# -> daily: Filter daily (equivalent to "....-..-.. 00:00:00").
+timefilter: "6hr"
+
+#  --minlat <double> [-90.0]
+# The minimum latitude for tagged points.
+minlat: -90.0
+
+#  --maxlat <double> [90.0]
+# The maximum latitude for tagged points. If --maxlat and --minlat are equal,
+# then these arguments are ignored.
+maxlat: 90.0
+
+#  --minabslat <double> [0.0]
+# The minimum absolute value of the latitude for tagged points. Has no effect
+# if set to zero.
+minabslat: 20.0
+
+#  --regional <bool>
+# Used to indicate that a given latitude-longitude grid should not be periodic
+# in the longitudinal direction.
+regional: false
+
+#  --tagvar <string> ""
+# The name of the output variable containing the binary tags.
+tagvar: "AR_binary_tag"
+
+#  --lonname <string> "lon"
+# Name of the longitude variable in the data files.
+lonname: "longitude"
+
+#  --latname <string> "lat"
+# Name of the latitude variable in the data files.
+latname: "latitude"
+
+#  --verbosity <integer> [0]
+# Set the verbosity level of execution.
+verbosity: 0

@@ -5,7 +5,7 @@ import glob
 import re
 import argparse
 
-def generate_file_list(patterns, output_file, identifier_regex, static_file=None):
+def generate_file_list(output_file, input_config):
     """
     Generate a text file with semicolon-separated lists of files.
     Each line will contain matched files across different patterns that share a common identifier.
@@ -15,7 +15,16 @@ def generate_file_list(patterns, output_file, identifier_regex, static_file=None
         output_file (str): Path to the output text file
         identifier_regex (str): Regular expression to extract common identifiers from filenames
         static_file (str, optional): Path to a static file to append to each line
+        matching_mode (str): Either 'simple' (original behavior) or 'era5_datalake' (for NERSC ERA5 datalake)
     """
+
+    matching_mode    = input_config.get('matching_mode', 'simple')
+    patterns         = input_config['patterns']
+    identifier_regex = input_config['pattern_match']
+    static_file      = input_config.get('static_file', None)
+    era5_start_month = input_config.get('era5_start_month', '195001')
+    era5_final_month = input_config.get('era5_final_month', '202412')
+
     # Collect all files by pattern
     all_files = []
     for pattern in patterns:
@@ -28,7 +37,22 @@ def generate_file_list(patterns, output_file, identifier_regex, static_file=None
         print("Error: One or more patterns didn't match any files.")
         return
     
-    # Create a mapping of identifiers to file lists
+    if matching_mode == 'simple':
+        # Original simple matching logic
+        _simple_matching(all_files, identifier_regex, patterns, output_file, static_file)
+    elif matching_mode == 'era5_datalake':
+        # New temporal matching logic for ERA5 data in the NERSC datalake
+        _era5_datalake_matching(output_file, start_month=era5_start_month, final_month=era5_final_month, 
+                                ERA5DIR='/global/cfs/cdirs/m3522/cmip6/ERA5/', static_file=static_file,
+                                variables_pl=input_config['variables_pl'], 
+                                variables_sfc=input_config['variables_sfc'],
+                                variables_vinteg=input_config['variables_vinteg'],
+                                tp_timescale=input_config.get('tp_timescale', None))
+    else:
+        raise ValueError(f"Unknown matching_mode: {matching_mode}")
+
+def _simple_matching(all_files, identifier_regex, patterns, output_file, static_file=None):
+    """Original simple matching logic"""
     files_by_id = {}
     
     # Process the first pattern
@@ -68,6 +92,49 @@ def generate_file_list(patterns, output_file, identifier_regex, static_file=None
         print(f"Example line: {';'.join(example_line)}")
     else:
         print("No complete matches found.")
+    
+    return complete_matches
+
+def _era5_datalake_matching(output_file, start_month='195001', final_month='202412', ERA5DIR='/global/cfs/cdirs/m3522/cmip6/ERA5/',
+                            static_file='/pscratch/sd/b/beharrop/kmscale_hackathon/ERA5_tracking/e5.oper.invariant.Zs.ll025sc.nc',
+                            variables_pl=['128_129_z'], variables_sfc=['128_151_msl', '128_165_10u', '128_166_10v'],
+                            variables_vinteg=['162_071_viwve', '162_072_viwvn'], tp_timescale=None):
+    """
+    Temporal matching logic for ERA5 data in the NERSC datalake where some files are daily
+    and others are monthly. The start_month, final_month, variables_pl, and variables_sfc are
+    specified in the config yaml files.
+    tp_timescale can be '1h', '3h', or '6h'
+    """
+
+    with open(output_file, 'w') as f:
+        for yearmonth in sorted(os.listdir(os.path.join(ERA5DIR, 'e5.oper.an.pl' + os.sep))):
+            if int(yearmonth) > int(final_month):
+                continue
+            if int(yearmonth) < int(start_month):
+                continue
+            sfc_write_line = ''
+            for sfc_var in variables_sfc:
+                sfc_write_line += ';' + glob.glob(os.path.join(ERA5DIR, 'e5.oper.an.sfc', yearmonth, f"*{sfc_var}*"))[0]
+            # sfc_write_line = sfc_write_line[1:]
+            for vinteg_var in variables_vinteg:
+                sfc_write_line += ';' + glob.glob(os.path.join(ERA5DIR, 'e5.oper.an.vinteg', yearmonth, f"*{vinteg_var}*"))[0]
+            if static_file:
+                sfc_write_line += ';' + static_file
+            if tp_timescale:
+                sfc_write_line += ';' + os.path.join(ERA5DIR, f"e5.accumulated_tp_{tp_timescale}", 
+                                                   f"e5.accumulated_tp_{tp_timescale}.{yearmonth}.nc")
+            if len(variables_pl) > 0:
+                for zfile in sorted(glob.glob(os.path.join(ERA5DIR, 'e5.oper.an.pl', yearmonth, '*128_129_z*'))):
+                    date_string_pl = zfile[-24:-3]
+                    write_line     = sfc_write_line
+                    for pl_var in variables_pl:
+                        write_line = os.path.join(ERA5DIR, 'e5.oper.an.pl', yearmonth, 
+                                                   f"e5.oper.an.pl.{pl_var}.ll025sc.{date_string_pl}.nc") + sfc_write_line
+                    f.write(write_line + "\n")
+            else:
+                write_line = sfc_write_line[1:]
+                f.write(write_line + "\n")
+    return None
 
 def transform_file_list(input_file, output_file, identifier_regex, prefix="", suffix=""):
     """
@@ -132,6 +199,8 @@ def main():
     gen_parser.add_argument('--regex', required=True, 
                            help='Regular expression with a capture group to extract identifiers')
     gen_parser.add_argument('--static-file', help='Path to a static file to append to each line')
+    gen_parser.add_argument('--matching-mode', choices=['simple', 'era5_datalake'], default='simple',
+                           help='Matching mode: simple (exact identifier match) or era5_datalake (time-hierarchical matching for ERA5 data)')
     
     # Subparser for the new transform functionality
     trans_parser = subparsers.add_parser('transform', 
@@ -146,7 +215,7 @@ def main():
     args = parser.parse_args()
     
     if args.command == 'generate':
-        generate_file_list(args.patterns, args.output, args.regex, args.static_file)
+        generate_file_list(args.patterns, args.output, args.regex, args.static_file, args.matching_mode)
     elif args.command == 'transform':
         transform_file_list(args.input, args.output, args.regex, args.prefix, args.suffix)
     else:

@@ -3,9 +3,10 @@ import numpy as np
 import pandas as pd
 import os
 import sys
+import argparse
 
 # Parse the storm data text file
-def parse_storm_file(file_path):
+def parse_storm_file(file_path, unstructured_mesh=True):
     storm_data = []
     with open(file_path, 'r') as f:
         storm_id = 0
@@ -18,16 +19,29 @@ def parse_storm_file(file_path):
             else:
                 # Storm details
                 cols = line.split()
-                storm_data.append({
-                    "storm_id": storm_id,
-                    "grid_id": int(cols[0]),
-                    "lon": float(cols[1]),
-                    "lat": float(cols[2]),
-                    "year": int(cols[-4]),
-                    "month": int(cols[-3]),
-                    "day": int(cols[-2]),
-                    "hour": int(cols[-1])
-                })
+                if unstructured_mesh:
+                    storm_data.append({
+                        "storm_id": storm_id,
+                        "grid_id": int(cols[0]),
+                        "lon": float(cols[1]),
+                        "lat": float(cols[2]),
+                        "year": int(cols[-4]),
+                        "month": int(cols[-3]),
+                        "day": int(cols[-2]),
+                        "hour": int(cols[-1])
+                    })
+                else:
+                    storm_data.append({
+                        "storm_id": storm_id,
+                        "lon_id": int(cols[0]),
+                        "lat_id": int(cols[1]),
+                        "lon": float(cols[2]),
+                        "lat": float(cols[3]),
+                        "year": int(cols[-4]),
+                        "month": int(cols[-3]),
+                        "day": int(cols[-2]),
+                        "hour": int(cols[-1])
+                    })
     return pd.DataFrame(storm_data)
 
 def sphere_distance(lon1=0., lat1=0., lon2=0., lat2=0., units='degrees', radius=6.37122e6):
@@ -69,10 +83,17 @@ def assign_storm_ids(storm_df, binary_masks, tag_name='ETC_binary_tag', gcd_thre
         # Process all storms for this timestep together
         for _, storm in time_storms.iterrows():
             # Vectorized distance calculation
-            distances = sphere_distance(
-                time_mask['lon'], time_mask['lat'], 
-                storm['lon'], storm['lat']
-            )
+            try:
+                distances = sphere_distance(
+                    time_mask['lon'], time_mask['lat'], 
+                    storm['lon'], storm['lat']
+                )
+            except KeyError:
+                distances = sphere_distance(
+                    time_mask['longitude'], time_mask['latitude'], 
+                    storm['lon'], storm['lat']
+                )
+    
             
             # Create storm-specific mask
             storm_mask = (time_mask == 1) & (distances <= gcd_thresh)
@@ -88,31 +109,31 @@ def assign_storm_ids(storm_df, binary_masks, tag_name='ETC_binary_tag', gcd_thre
 def main():
     """
     Main function to handle command line arguments and assign the storm IDs
-
     """
-    # Check that we have at least 3 arguments (script name, storm file, and binary masks file)
-    if len(sys.argv) != 4:
-        print("Usage: python ETC_track_counter.py <storm_file>" +
-              " <binary_masks_file> <output_file>")
-        sys.exit(1)
-
-    # Storm file argument
-    storm_file    = sys.argv[1]
-
-    # Binary masks file(s)
-    bin_mask_file = sys.argv[2]
+    # Set up argument parser
+    parser = argparse.ArgumentParser(description='Assign storm IDs to binary masks based on storm track data')
+    parser.add_argument('storm_file', help='Path to the storm track file')
+    parser.add_argument('binary_masks_file', help='Path to the binary masks netCDF file')
+    parser.add_argument('output_file', help='Path for the output netCDF file')
+    parser.add_argument('--unstructured', action='store_true', default=True,
+                        help='Use unstructured mesh format (default: True)')
+    parser.add_argument('--structured', dest='unstructured', action='store_false',
+                        help='Use structured (lat-lon) grid format')
     
-    # Last argument is the output file
-    output_file   = sys.argv[3]
+    # Parse arguments
+    args = parser.parse_args()
 
-    storm_df      = parse_storm_file(storm_file)
-    binary_masks  = xr.open_dataset(bin_mask_file)
+    # Parse storm data with the appropriate mesh type
+    storm_df = parse_storm_file(args.storm_file, unstructured_mesh=args.unstructured)
+    binary_masks = xr.open_dataset(args.binary_masks_file)
     
     binary_masks['ETC_int_tag'] = assign_storm_ids(storm_df, binary_masks)
-    binary_masks.to_netcdf(output_file, mode='w')
+    binary_masks.to_netcdf(args.output_file, mode='w')
     
 
 if __name__ == "__main__":
-    # python ETC_track_counter.py <storm_file> <binary_masks_file> <output_file>
+    # Usage examples:
+    # python ETC_track_counter.py storm_file.txt binary_masks.nc output.nc
+    # python ETC_track_counter.py storm_file.txt binary_masks.nc output.nc --structured
     main()
     
