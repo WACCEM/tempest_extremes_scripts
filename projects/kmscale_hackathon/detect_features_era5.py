@@ -81,6 +81,7 @@ def detect_ar(config,
 def detect_etc(config,
                config_DetectNodes=None,
                config_StitchNodes=None,
+               config_VariableProcessor=None,
                config_NodeFileFilter=None,
                config_StitchBlobs=None):
     """Detect extratropical cyclones using TempestExtremes commands."""
@@ -107,6 +108,9 @@ def detect_etc(config,
     # StitchNodes (Step 2)
     if config_StitchNodes is not None:
         run_command(build_StitchNodes_command(config_StitchNodes), use_srun=False)
+
+    if config_VariableProcessor is not None:
+        run_command(build_VariableProcessor_command(config_VariableProcessor), use_srun=True)
     
     # NodeFileFilter (Step 3)
     if config_NodeFileFilter is not None:
@@ -144,7 +148,7 @@ def main():
     config_TC_DetectNodes     = load_yaml_file('projects/kmscale_hackathon/config_ERA5_TC_DetectNodes.yaml')
     config_TC_StitchNodes     = load_yaml_file('projects/kmscale_hackathon/config_TC_StitchNodes.yaml')
     config_TC_NodeFileFilter  = load_yaml_file('projects/kmscale_hackathon/config_ERA5_TC_NodeFileFilter.yaml')
-    config_TC_StitchBlobs     = load_yaml_file('projects/kmscale_hackathon/config_TC_StitchBlobs.yaml')
+    config_TC_StitchBlobs     = load_yaml_file('projects/kmscale_hackathon/config_ERA5_TC_StitchBlobs.yaml')
 
     # Load the AR yaml files
     config_AR_DetectBlobs     = load_yaml_file('projects/kmscale_hackathon/config_ERA5_AR_DetectBlobs.yaml')
@@ -152,10 +156,11 @@ def main():
     config_AR_StitchBlobs     = load_yaml_file('projects/kmscale_hackathon/config_ERA5_AR_StitchBlobs.yaml')
 
     # Load the ETC yaml files
-    config_ETC_DetectNodes    = load_yaml_file('projects/kmscale_hackathon/config_ERA5_ETC_DetectNodes.yaml')
-    config_ETC_StitchNodes    = load_yaml_file('projects/kmscale_hackathon/config_ETC_StitchNodes.yaml')
-    config_ETC_NodeFileFilter = load_yaml_file('projects/kmscale_hackathon/config_ERA5_ETC_NodeFileFilter.yaml')
-    config_ETC_StitchBlobs    = load_yaml_file('projects/kmscale_hackathon/config_ETC_StitchBlobs.yaml')
+    config_ETC_DetectNodes       = load_yaml_file('projects/kmscale_hackathon/config_ERA5_ETC_DetectNodes.yaml')
+    config_ETC_StitchNodes       = load_yaml_file('projects/kmscale_hackathon/config_ETC_StitchNodes.yaml')
+    config_ETC_NodeFileFilter    = load_yaml_file('projects/kmscale_hackathon/config_ERA5_ETC_NodeFileFilter.yaml')
+    config_ETC_VariableProcessor = load_yaml_file('projects/kmscale_hackathon/config_ERA5_CyclVort850_VariableProcessor.yaml')
+    config_ETC_StitchBlobs       = load_yaml_file('projects/kmscale_hackathon/config_ERA5_ETC_StitchBlobs.yaml')
 
     # Update TC config files with IO stuff 
     config_TC_DetectNodes     = safe_update(config_TC_DetectNodes,     config)
@@ -169,10 +174,11 @@ def main():
     config_AR_StitchBlobs     = safe_update(config_AR_StitchBlobs,     config)
 
     # Update ETC config files with IO stuff 
-    config_ETC_DetectNodes    = safe_update(config_ETC_DetectNodes,    config)
-    config_ETC_StitchNodes    = safe_update(config_ETC_StitchNodes,    config)
-    config_ETC_NodeFileFilter = safe_update(config_ETC_NodeFileFilter, config)
-    config_ETC_StitchBlobs    = safe_update(config_ETC_StitchBlobs,    config)
+    config_ETC_DetectNodes       = safe_update(config_ETC_DetectNodes,       config)
+    config_ETC_StitchNodes       = safe_update(config_ETC_StitchNodes,       config)
+    config_ETC_NodeFileFilter    = safe_update(config_ETC_NodeFileFilter,    config)
+    config_ETC_VariableProcessor = safe_update(config_ETC_VariableProcessor, config)
+    config_ETC_StitchBlobs       = safe_update(config_ETC_StitchBlobs,       config)
     print("Let's print out the config_TC_DetectNodes keys after update")
     for key in config_TC_DetectNodes.keys():    
         print(f"{key}:", config_TC_DetectNodes[key])
@@ -197,6 +203,8 @@ def main():
     # ETC files
     config['etc_detected_nodes']      = f"{config['output_dir']}/{config['shortname']}.etc_detected_nodes.txt"
     config['etc_stitched_nodes']      = f"{config['output_dir']}/{config['shortname']}.etc_stitched_nodes.txt"
+    config['etc_cyclvort850_list']    = f"{config['output_dir']}/{config['shortname']}.etc_cyclvort850_list.txt"
+    config['etc_cyclvort850_file']    = f"{config['output_dir']}/{config['shortname']}.etc_cyclvort850_file.nc"
     config['etc_filtered_nodes_file'] = f"{config['output_dir']}/{config['shortname']}.etc_filtered_nodes.nc"
     config['etc_filtered_nodes_list'] = f"{config['output_dir']}/{config['shortname']}.etc_filtered_nodes.txt"
     config['etc_tracks_file']         = f"{config['output_dir']}/{config['shortname']}.etc_tracks.nc"
@@ -237,21 +245,23 @@ def main():
 
     # Finally ETC IO files
     if config_ETC_DetectNodes['in_data_list']:
-        config_ETC_DetectNodes['out_file_list']    = config['etc_detected_nodes']
-        config_ETC_StitchNodes['in_list']          = config['etc_detected_nodes']
-        config_ETC_NodeFileFilter['in_data_list']  = config['input_pr_ws_list']
-        config_ETC_NodeFileFilter['out_data_list'] = config['etc_filtered_nodes_list']
-        config_ETC_StitchBlobs['in_list']          = config['etc_filtered_nodes_list']
-        config_ETC_StitchBlobs['out_list']         = config['etc_tracks_list']
+        config_ETC_DetectNodes['out_file_list']       = config['etc_detected_nodes']
+        config_ETC_StitchNodes['in_list']             = config['etc_detected_nodes']
+        config_ETC_VariableProcessor['out_data_list'] = config['etc_cyclvort850_list']
+        config_ETC_NodeFileFilter['in_data_list']     = config['etc_cyclvort850_list']
+        config_ETC_NodeFileFilter['out_data_list']    = config['etc_filtered_nodes_list']
+        config_ETC_StitchBlobs['in_list']             = config['etc_filtered_nodes_list']
+        config_ETC_StitchBlobs['out_list']            = config['etc_tracks_list']
     if config_ETC_DetectNodes['in_data']:
-        config_ETC_DetectNodes['out']              = config['etc_detected_nodes']
-        config_ETC_StitchNodes['in']               = config['etc_detected_nodes']
-        config_ETC_NodeFileFilter['in_data']       = config['in_data']
-        config_ETC_NodeFileFilter['out_data']      = config['etc_filtered_nodes_file']
-        config_ETC_StitchBlobs['in']               = config['etc_filtered_nodes_file']
-        config_ETC_StitchBlobs['out']              = config['etc_tracks_file']
-    config_ETC_StitchNodes['out']                  = config['etc_stitched_nodes']
-    config_ETC_NodeFileFilter['in_nodefile']       = config['etc_stitched_nodes']
+        config_ETC_DetectNodes['out']                 = config['etc_detected_nodes']
+        config_ETC_StitchNodes['in']                  = config['etc_detected_nodes']
+        config_ETC_VariableProcessor['out_data']      = config['etc_cyclvort850_file']
+        config_ETC_NodeFileFilter['in_data']          = config['etc_cyclvort850_file']
+        config_ETC_NodeFileFilter['out_data']         = config['etc_filtered_nodes_file']
+        config_ETC_StitchBlobs['in']                  = config['etc_filtered_nodes_file']
+        config_ETC_StitchBlobs['out']                 = config['etc_tracks_file']
+    config_ETC_StitchNodes['out']                     = config['etc_stitched_nodes']
+    config_ETC_NodeFileFilter['in_nodefile']          = config['etc_stitched_nodes']
 
 
     # Transform file lists
@@ -272,6 +282,7 @@ def main():
     print('ETC config:')
     print(config_ETC_DetectNodes)
     print(config_ETC_StitchNodes)
+    print(config_ETC_VariableProcessor)
     print(config_ETC_NodeFileFilter)
     print(config_ETC_StitchBlobs)
     
@@ -285,8 +296,8 @@ def main():
     detect_tc(config, 
               config_DetectNodes=config_TC_DetectNodes,
               config_StitchNodes=config_TC_StitchNodes,
-              config_NodeFileFilter=config_TC_NodeFileFilter)#,
-              #config_StitchBlobs=config_TC_StitchBlobs)
+              config_NodeFileFilter=config_TC_NodeFileFilter,
+              config_StitchBlobs=config_TC_StitchBlobs)
     detect_ar(config,
               config_DetectBlobs=config_AR_DetectBlobs,
               config_NodeFileFilter=config_AR_NodeFileFilter,
@@ -294,8 +305,9 @@ def main():
     detect_etc(config,
                config_DetectNodes=config_ETC_DetectNodes,
                config_StitchNodes=config_ETC_StitchNodes,
-               config_NodeFileFilter=config_ETC_NodeFileFilter)#,
-               #config_StitchBlobs=config_ETC_StitchBlobs)
+               config_VariableProcessor=config_ETC_VariableProcessor,
+               config_NodeFileFilter=config_ETC_NodeFileFilter,
+               config_StitchBlobs=config_ETC_StitchBlobs)
     
     file_cleanup(config, drop_vars=[])
 

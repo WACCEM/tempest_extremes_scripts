@@ -4,7 +4,7 @@ shortname: 'era5'
 
 # output_dir <string>
 # Specify the path to save files to (required)
-output_dir: '/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/era5_tracking/'
+output_dir: '/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/era5_tracking2/'
 
 # --in_data <string> ""
 # A list of input data files in NetCDF format, separated by semicolons.
@@ -14,7 +14,7 @@ in_data: ''
 # A text file containing the --in_data argument for a sequence of processing
 # operations (one per line). When parallelization is enabled, the list of data
 # files are distributed as equally as possible among available processors.
-in_data_list: '/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/era5_tracking/era5.input.txt'
+in_data_list: '/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/era5_tracking2/era5.input.txt'
 
 # --in <string> ""
 # The input nodefile (typically output from from DetectNodes).
@@ -74,7 +74,7 @@ patterns:
     - '/global/cfs/cdirs/m3522/cmip6/ERA5/e5.oper.an.pl/202001/e5.oper.an.pl.128_129_z.ll025sc.2020010100_2020010123.nc'
 
 # pattern match specifies the pattern that changes between each file
-pattern_match: '(ll025sc.\d{10}_\d{10})'  # Regular expression
+pattern_match: '(ll025\D{2}.\d{10}_\d{10})'  # Regular expression
 
 # a static file can be used for time invariant variables like elevation that may need to be specified, but exist in a single file
 # this file gets appended to each line within input_list
@@ -95,6 +95,8 @@ era5_final_month: '202103'
 
 variables_pl:
     - '128_129_z'
+    - '128_131_u'
+    - '128_132_v'
 
 variables_sfc:
     - '128_151_msl'

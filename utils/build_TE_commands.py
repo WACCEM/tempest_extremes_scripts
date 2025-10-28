@@ -8,7 +8,7 @@ def build_VariableProcessor_command(config):
         "--in_data_list",        f"{config['in_data_list']}",
         "--in_connect",          f"{config['in_connect']}",
         "--out_data",            f"{config['out_data']}",
-        "--out_file_list",       f"{config['out_file_list']}",
+        "--out_data_list",       f"{config['out_data_list']}",
         "--preserve",            f"{config['preserve']}",
         "--var",                 f"{config['var']}",
         "--varout",              f"{config['varout']}",

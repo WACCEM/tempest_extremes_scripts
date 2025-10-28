@@ -144,7 +144,11 @@ def transform_file_lists(config):
     if config['etc_filtered_nodes_list']:
         transform_file_list(config['in_data_list'], config['etc_filtered_nodes_list'], config['pattern_match'],
                             prefix=f"{config['output_dir']}ETC_filt_nodes_{config['shortname']}_", suffix=".nc")
-    
+        
+    if config['etc_cyclvort850_list']:
+        transform_file_list(config['in_data_list'], config['etc_cyclvort850_list'], config['pattern_match'],
+                            prefix=f"{config['output_dir']}ETC_cyclvort850_{config['shortname']}_", suffix=".nc")
+
     if config['etc_tracks_list']:
         transform_file_list(config['in_data_list'], config['etc_tracks_list'], config['pattern_match'],
                             prefix=f"{config['output_dir']}ETC_tracks_{config['shortname']}_", suffix=".nc")

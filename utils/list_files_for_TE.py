@@ -126,10 +126,16 @@ def _era5_datalake_matching(output_file, start_month='195001', final_month='2024
             if len(variables_pl) > 0:
                 for zfile in sorted(glob.glob(os.path.join(ERA5DIR, 'e5.oper.an.pl', yearmonth, '*128_129_z*'))):
                     date_string_pl = zfile[-24:-3]
-                    write_line     = sfc_write_line
+                    write_line = ''
                     for pl_var in variables_pl:
-                        write_line = os.path.join(ERA5DIR, 'e5.oper.an.pl', yearmonth, 
-                                                   f"e5.oper.an.pl.{pl_var}.ll025sc.{date_string_pl}.nc") + sfc_write_line
+                        if pl_var in ['128_131_u', '128_132_v']:
+                            # Different tag for u/v wind files
+                            tag = 'll025uv'
+                        else:
+                            tag = 'll025sc'
+                        write_line += ';' + os.path.join(ERA5DIR, 'e5.oper.an.pl', yearmonth, 
+                                                   f"e5.oper.an.pl.{pl_var}.{tag}.{date_string_pl}.nc")
+                    write_line = write_line[1:] + sfc_write_line
                     f.write(write_line + "\n")
             else:
                 write_line = sfc_write_line[1:]
