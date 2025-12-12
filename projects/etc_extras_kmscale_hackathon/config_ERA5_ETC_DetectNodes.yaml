@@ -1,0 +1,127 @@
+#  --searchbymin <variable> "" (default PSL)
+# The input variable to use for initially selecting candidate points (defined
+# as local minima). At least one (and at most one) of --searchbymin or
+# --searchbymax must be specified.
+searchbymin: 'MSL'
+
+#  --searchbymax <variable> ""
+# The input variable to use for initially selecting candidate points (defined
+# as local maxima). At least one (and at most one) of --searchbymin or
+# --searchbymax must be specified.
+searchbymax: ''
+
+#  --searchbythreshold <string> ""
+searchbythreshold: ''
+
+#  --minlon <double> [0.0]
+# The minimum longitude for candidate points.
+minlon: 0.0
+
+#  --maxlon <double> [0.0]
+# The maximum longitude for candidate points. As longitude is a periodic dimension, when --regional is not specified --minlon may be larger than --maxlon. If --maxlon and --minlon are equal then these arguments are ignored.
+maxlon: 0.0
+
+#  --minlat <double> [0.0]
+# The minimum latitude for candidate points.
+minlat: 0.0
+
+#  --maxlat <double> [0.0]
+# The maximum latitude for candidate points. If --maxlat and --minlat are equal
+# then these arguments are ignored.
+maxlat: 0.0
+
+#  --minabslat <double> [0.0]
+# The minimum absolute value of the latitude for candidate points. This
+# argument has no effect if set to zero.
+minabslat: 20.0
+
+#  --mergedist <double> [0.0] (degrees)
+# DetectNodes merges candidate points with a distance (in degrees
+# great-circle-distance) shorter than the specified value. Among two candidates
+# within the merge distance, only the candidate with the lowest value of the
+# --searchbymin field or highest value of the --searchbymax field are retained.
+mergedist: 9.0
+
+#  --closedcontourcmd <string> "<cmd1>;<cmd2>;..."
+# Eliminate candidates if they do not have a closed contour. The closed contour
+# is determined by breadth first search: if any paths exist from the candidate
+# point (or nearby minima/maxima if minmaxdist is specified) that reach the
+# specified distance before achieving the specified delta then we say no closed
+# contour is present. Closed contour commands are separated by a semicolon.
+# Each closed contour command takes the form "var,delta,dist,minmaxdist. These 
+# arguments are as follows.
+# -> var <variable> is the name of the variable used for the contour search.
+# -> dist <double> is the great-circle distance (in degrees) from the pivot 
+#    within which the closedcontour criteria must be satisfied.
+# -> delta <double> is the amount by which the field must change from the pivot
+#    value. If positive (negative) the field must increase (decrease) by this 
+#    value along the contour.
+# -> minmaxdist <double> is the great-circle distance away from the candidate 
+#    to search for the minima/maxima. If delta is positive (negative), the 
+#    pivot is a local minimum (maximum).
+closedcontourcmd: "MSL,200.0,5.5,0"
+
+#  --noclosedcontourcmd <string> "<cmd1>;<cmd2>;..."
+# As --closedcontourcmd, except it eliminates candidates if a closed contour 
+# is present.
+noclosedcontourcmd: '_DIFF(Z(300hPa),Z(500hPa)),-58.8,6.5,1.0'
+
+#  --thresholdcmd <string> "<cmd1>;<cmd2>;..."
+# Eliminate candidates that do not satisfy a threshold criteria (there must 
+# exist a point within a given distance of the candidate that satisfies a given
+#  equality or inequality). Search is performed by breadth-first search over 
+# the grid. Threshold commands are separated by a semicolon. Each threshold 
+# command takes the form "var,op,value,dist". These arguments are as follows.
+# -> var <variable> is the name of the variable used for the thresholding.
+# -> op <string> is the operator that must be satisfied for threshold (options 
+#    include >,>=,<,<=,=,!=).
+# -> value <double> is the value on the right-hand-side of the comparison.
+# -> dist <double> is the great-circle distance away from the candidate to 
+#    search for a point that satisfies the threshold.
+thresholdcmd: ''
+
+#  --outputcmd <string> "<cmd1>;<cmd2>;..."
+# Include additional columns in the output file. Each output command takes the 
+# form "var,op,dist". These arguments are as follows.
+# -> var <variable> is the name of the variable used for output.
+# -> op <string> is the operator that is applied over all points within the 
+#    specified distance of the candidate (options include max, min, avg, 
+#    maxdist, mindist).
+# -> dist <double> is the great-circle distance away from the candidate wherein
+#    the operator is applied.
+outputcmd: "MSL,min,0;_VECMAG(VAR_10U,VAR_10V),max,2;ZS,min,0;tp,avg,4;_VECMAG(U(1000hPa),V(1000hPa)),max,2;_VECMAG(U(925hPa),V(925hPa)),max,2;_VECMAG(U(850hPa),V(850hPa)),max,2;_VECMAG(U(700hPa),V(700hPa)),max,2;_VECMAG(U(500hPa),V(500hPa)),max,2;_VECMAG(U(300hPa),V(300hPa)),max,2;_VECMAG(U(250hPa),V(250hPa)),max,2"
+
+#  --timefilter <string> ""
+# A regular expression used to match only those time values to be retained. 
+# Several default values are available as well as follows.
+# 3hr filter every 3 hourly (equivalent to 
+# "....-..-.. (00|03|06|09|12|15|18|21):00:00").
+# 6hr filter every 6 hourly (equivalent to "....-..-.. (00|06|12|18):00:00").
+# daily filter daily (equivalent to "....-..-.. 00:00:00").
+timefilter: '6hr'
+
+#  --latname <string> "lat"
+latname: 'latitude'
+
+#  --lonname <string> "lon"
+lonname: 'longitude'
+
+#  --regional <bool>
+# Used to indicate that a given latitude-longitude grid should not be periodic 
+# in the longitudinal direction.
+regional: false
+
+#  --out_header <bool>
+# If present, output a header at the beginning of the output file indicating 
+# the columns of the file.
+out_header: false
+
+#  --out_seconds <bool> [false]
+out_seconds: false
+
+#  --logdir <string> "."
+logdir: '.'
+
+#  --verbosity <integer> [0]
+# Set the verbosity level of execution.
+verbosity: 0

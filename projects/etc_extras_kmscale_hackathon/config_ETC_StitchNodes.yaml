@@ -1,0 +1,56 @@
+#  --in_fmt <string> ""
+# A comma-separated list of names of the auxiliary columns within the input
+# nodefile (namely, the list must not include the indexing columns or time
+# columns).
+in_fmt: "lon,lat,slp,wind,zs,pr,ws1000,ws925,ws850,ws700,ws500,ws300,ws250"
+
+#  --range <double> [0.0]
+# The maximum distance between candidates along a path (in great-circle
+# degrees).
+range: 9.0
+
+#  --mintime <string> "1"
+# The minimum length of a path either in terms of number of discrete times or
+# as a duration, e.g., "24h". Note that the duration of a path is computed as
+# the difference between the final time and initial time, so a "24h" duration
+# corresponds to 5 time steps in 6-hourly data (i.e., 0h,6,12,18,24UTC).
+mintime: "24h"
+
+#  --min_endpoint_dist <double> [0.0]
+# The minimum great-circle distance between the first candidate on a path
+# and the last candidate (in degrees).
+min_endpoint_dist: 12.0
+
+#  --min_path_dist <double> [0.0]
+# The minimum accumulated great-circle distance between nodes in a path
+# (in degrees).
+min_path_dist: 0.0
+
+#  --maxgap <integer> [0]
+# The number of allowed missing points between spatially proximal candidate
+# nodes while still considering them part of the same path.
+maxgap: 2
+
+#  --threshold <string> "<cmd1>;<cmd2>;..."
+# Filter paths based on the number of times where a particular threshold is
+# satisfied. Threshold commands are separated by a semicolon. Each threshold
+# command takes the form "col,op,value,count". These arguments are as follows:
+# -> col <variable> is the name of the column to use for thresholding, as
+#    specified in --format.
+# -> op <string> is the operator that must be satisfied for threshold (options
+#    include >,>=,<,<=,=,!=,|>=,|<=).
+# -> value <double> is the value on the right-hand-side of the comparison.
+# -> count <string> is either the minimum number of time slices where the
+#    threshold must be satisfied or the instruction "all", "first", or "last".
+#    Here "all" is used to indicate the threshold must be satisfied at all
+#    points along the path, "first" is used to indicate the threshold must be
+#    satisfied only at the first point along the path, and "last" is used to
+#    indicate the threshold must be satisfied only at the last point along the
+#    path.
+threshold: ""
+
+#  --out_file_format <string> "gfdl" (gfdl|csv|csvnohead)
+# The format of the output nodefile. Options are gfdl (standard GFDL format),
+# csv (comma-separated values with header), and csvnohead (comma-separated
+# values with no header).
+out_file_format: "gfdl"

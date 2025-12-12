@@ -1,0 +1,98 @@
+# shortname <string>
+# Specify a name to use for naming files (required)
+shortname: 'nicam_gl11_hp8'
+
+# output_dir <string>
+# Specify the path to save files to (required)
+output_dir: '/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/nicam_gl11_tracking_etc_extras/'
+
+# --in_data <string> ""
+# A list of input data files in NetCDF format, separated by semicolons.
+in_data: ''
+
+#  --in_data_list <string> ""
+# A text file containing the --in_data argument for a sequence of processing
+# operations (one per line). When parallelization is enabled, the list of data
+# files are distributed as equally as possible among available processors.
+in_data_list: '/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/nicam_gl11_tracking_etc_extras/nicam_gl11.input.txt'
+
+# --in <string> ""
+# The input nodefile (typically output from from DetectNodes).
+in: ''
+
+# --in_nodefile <string> ""
+# The filename of the input nodefile (typically output from
+# DetectNodes or StitchNodes).
+in_nodefile: ''
+
+#  --in_nodefile_type <string> ["SN"] [DN|SN]
+# The type of nodefile indicated by --in_nodefile: "DN" if from DetectNodes
+# or "SN" if from StitchNodes.
+in_nodefile_type: ''
+
+#  --in_list <string> ""
+# A text file containing a list of input data files.
+in_list: ''
+
+#  --in_connect <string> ""
+#A connectivity file that describes the unstructured grid.
+in_connect: '/global/cfs/cdirs/m1867/beharrop/TempestExtremes/hk25_tracking/grids/connect_healpix_grid_zoom_8_format_exodus_corrected_by_scrip.txt'
+
+#  --diag_connect <bool>
+# When the data is on a structured grid, consider grid cells to be connected in
+# the diagonal (across the vertex).
+diag_connect: ''
+
+# The following output stuff is set dynamically by the script... consider removing
+
+#  --out <string> ""
+# The output nodefile to write from the detection procedure.
+# Used when --in_data is specified.
+out: ''
+
+#  --out_file_list <string> ""
+# A text file containing an equal number of lines to --in_data_list specifying
+# the output nodefiles from each input datafile.
+out_file_list: ''
+
+# --out_list <string> ""
+# A text file containing, one per line, a list of output NetCDF files corresponding to the input files specified in --in_list or --in_data_list
+out_list: ''
+
+# --out_data_list <string> ""
+# A list of output data files, of the corresponding output for each file of --in_data_list
+out_data_list: ''
+
+# --out_data <string> ""
+# The output data file
+out_data: ''
+
+# The following arguments are not inputs directly to TE binaries
+
+# patterns lists the types where there are multiple files
+patterns:
+    - '/pscratch/sd/w/wcmca1/scream-cess-healpix/data4TE/Updated/nicam_gl11_PT6H/nicam_gl11_ivt_hp8_PT6H.??????.nc'
+    - '/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/nicam_gl11_data/nicam_gl11_ivt_hp8_PT6H.??????_zg300_zg500.nc'
+    - '/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/nicam_gl11_data/nicam_gl11_ivt_hp8_PT3H.??????.nc'
+
+# pattern match specifies the pattern that changes between each file
+pattern_match: '(H.\d{6})'  # Regular expression
+
+# a static file can be used for time invariant variables like elevation that may need to be specified, but exist in a single file
+# this file gets appended to each line within input_list
+static_file: '/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/scream_1year_data/ELEV.nc'
+
+# the crs file contains metadata for the healpix grid and can be appended during file cleanup
+crs_file: '/global/cfs/cdirs/m1867/beharrop/TempestExtremes/hk25_tracking/grids/crs_data_healpix_zoom_8.nc'
+
+# file cleanup arguments
+do_file_cleanup: true
+
+# do_append_crs - appends healpix metadata to all files
+do_append_crs: true
+
+# do_unify_dimensions - if both cell and ncol are created, then rename ncol to cell
+do_unify_dimensions: false
+
+# do_open_permissions - opens up read permissions for all users
+do_open_permissions: true
