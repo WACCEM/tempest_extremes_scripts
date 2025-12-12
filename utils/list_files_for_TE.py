@@ -156,6 +156,10 @@ def transform_file_list(input_file, output_file, identifier_regex, prefix="", su
     if not os.path.exists(input_file):
         print(f"Error: Input file {input_file} not found.")
         return
+
+    if len(output_file) == 0:
+        print(f"Error: Empty file {output_file} encountered.")
+        return
     
     transformed_lines = []
     skipped_lines = 0

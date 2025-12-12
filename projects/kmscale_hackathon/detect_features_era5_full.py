@@ -132,7 +132,7 @@ def main():
     config = {}
     
     # Load configuration and generate file lists
-    input_config  = load_config_and_generate_files("projects/kmscale_hackathon/era5_io_config.yaml")
+    input_config  = load_config_and_generate_files("projects/kmscale_hackathon/era5_io_config_full.yaml")
         
     # Update config with values from input_config
     config = safe_update(config, input_config)
@@ -158,7 +158,7 @@ def main():
     # Load the ETC yaml files
     config_ETC_DetectNodes       = load_yaml_file('projects/kmscale_hackathon/config_ERA5_ETC_DetectNodes.yaml')
     config_ETC_StitchNodes       = load_yaml_file('projects/kmscale_hackathon/config_ETC_StitchNodes.yaml')
-    config_ETC_NodeFileFilter    = load_yaml_file('projects/kmscale_hackathon/config_ERA5_ETC_NodeFileFilter_vortblobs.yaml')
+    config_ETC_NodeFileFilter    = load_yaml_file('projects/kmscale_hackathon/config_ERA5_ETC_NodeFileFilter.yaml')
     config_ETC_VariableProcessor = load_yaml_file('projects/kmscale_hackathon/config_ERA5_CyclVort850_VariableProcessor.yaml')
     config_ETC_StitchBlobs       = load_yaml_file('projects/kmscale_hackathon/config_ERA5_ETC_StitchBlobs.yaml')
 
@@ -303,11 +303,17 @@ def main():
               config_NodeFileFilter=config_AR_NodeFileFilter,
               config_StitchBlobs=config_AR_StitchBlobs)
     detect_etc(config,
-               config_DetectNodes=config_ETC_DetectNodes,
-               config_StitchNodes=config_ETC_StitchNodes,
-               config_VariableProcessor=config_ETC_VariableProcessor,
-               config_NodeFileFilter=config_ETC_NodeFileFilter,
-               config_StitchBlobs=config_ETC_StitchBlobs)
+               config_DetectNodes=None,
+               config_StitchNodes=None,
+               config_VariableProcessor=None,
+               config_NodeFileFilter=None,
+               config_StitchBlobs=None)
+    # detect_etc(config,
+    #            config_DetectNodes=config_ETC_DetectNodes,
+    #            config_StitchNodes=config_ETC_StitchNodes,
+    #            config_VariableProcessor=config_ETC_VariableProcessor,
+    #            config_NodeFileFilter=config_ETC_NodeFileFilter,
+    #            config_StitchBlobs=config_ETC_StitchBlobs)
     
     file_cleanup(config, drop_vars=[])
 

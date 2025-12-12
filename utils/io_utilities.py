@@ -111,45 +111,45 @@ def transform_file_lists(config):
         return
     
     # TC files
-    if config['tc_detected_nodes']:
+    if 'tc_detected_nodes' in config:
         transform_file_list(config['in_data_list'], config['tc_detected_nodes'], config['pattern_match'], 
                             prefix=f"{config['output_dir']}TC_det_nodes_{config['shortname']}_", suffix=".txt")
     
-    if config['tc_filtered_nodes_file']:
+    if 'tc_filtered_nodes_file' in config:
         transform_file_list(config['in_data_list'], config['tc_filtered_nodes_list'], config['pattern_match'],
                             prefix=f"{config['output_dir']}TC_filt_nodes_{config['shortname']}_", suffix=".nc")
     
-    if config['tc_tracks_list']:
+    if 'tc_tracks_list' in config:
         transform_file_list(config['in_data_list'], config['tc_tracks_list'], config['pattern_match'],
                             prefix=f"{config['output_dir']}TC_tracks_{config['shortname']}_", suffix=".nc")
     
     # AR files
-    if config['ar_detected_blobs_list']:
+    if 'ar_detected_blobs_list' in config:
         transform_file_list(config['in_data_list'], config['ar_detected_blobs_list'], config['pattern_match'],
                             prefix=f"{config['output_dir']}AR_det_nodes_{config['shortname']}_", suffix=".nc")
     
-    if config['ar_filtered_nodes_list']:
+    if 'ar_filtered_nodes_list' in config:
         transform_file_list(config['in_data_list'], config['ar_filtered_nodes_list'], config['pattern_match'],
                             prefix=f"{config['output_dir']}AR_filt_nodes_{config['shortname']}_", suffix=".nc")
     
-    if config['ar_tracks_list']:
+    if 'ar_tracks_list' in config:
         transform_file_list(config['in_data_list'], config['ar_tracks_list'], config['pattern_match'],
                             prefix=f"{config['output_dir']}AR_tracks_{config['shortname']}_", suffix=".nc")
     
     # ETC files
-    if config['etc_detected_nodes']:
+    if 'etc_detected_nodes' in config:
         transform_file_list(config['in_data_list'], config['etc_detected_nodes'], config['pattern_match'],
                             prefix=f"{config['output_dir']}ETC_det_nodes_{config['shortname']}_", suffix=".txt")
     
-    if config['etc_filtered_nodes_list']:
+    if 'etc_filtered_nodes_list' in config:
         transform_file_list(config['in_data_list'], config['etc_filtered_nodes_list'], config['pattern_match'],
                             prefix=f"{config['output_dir']}ETC_filt_nodes_{config['shortname']}_", suffix=".nc")
         
-    if config['etc_cyclvort850_list']:
+    if 'etc_cyclvort850_list' in config:
         transform_file_list(config['in_data_list'], config['etc_cyclvort850_list'], config['pattern_match'],
                             prefix=f"{config['output_dir']}ETC_cyclvort850_{config['shortname']}_", suffix=".nc")
 
-    if config['etc_tracks_list']:
+    if 'etc_tracks_list' in config:
         transform_file_list(config['in_data_list'], config['etc_tracks_list'], config['pattern_match'],
                             prefix=f"{config['output_dir']}ETC_tracks_{config['shortname']}_", suffix=".nc")
 

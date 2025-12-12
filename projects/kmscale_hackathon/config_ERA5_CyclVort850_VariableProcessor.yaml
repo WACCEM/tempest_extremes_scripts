@@ -10,7 +10,7 @@ regional: false
 
 #  --var <variable> ""
 # A comma-separated list of variables to filter and write to the output.
-var: "_COND(_LAT(),_CURL{8,10}(U(850hPa),V(850hPa)),_PROD(_CURL{8,10}(U(850hPa),V(850hPa)),-1))"
+var: "_COND(_LAT(),_CURL{8,3}(U(850hPa),V(850hPa)),_PROD(_CURL{8,3}(U(850hPa),V(850hPa)),-1))"
 
 #  --varout <string> ""
 # The name(s) of the variable to write to the output file.

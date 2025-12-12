@@ -9,7 +9,7 @@ var: "ETC_binary_tag"
 
 #  --outvar <string> ""
 # The name of the variable in the output file to contain the global feature ID.
-outvar: "ETC_count_index"
+outvar: "ETC_int_tag"
 
 #  --minsize <integer> [1]
 # The minimum number of grid points per time slice for a given areal feature.
@@ -18,7 +18,7 @@ minsize: 1
 #  --mintime <integer> [1]
 # The minimum number of time slices for a given tracked area feature. Features
 # that are not present for at least --mintime are removed.
-mintime: "1d"
+mintime: "1"
 
 #  --min_overlap_prev <double> [0.0] (%)
 # Minimum fractional area of the feature at time t1 that must be overlapped by
