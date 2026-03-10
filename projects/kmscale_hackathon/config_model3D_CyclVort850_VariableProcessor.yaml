@@ -1,0 +1,46 @@
+#  --diag_connect <bool>
+# When the data is on a structured grid, consider grid cells to be connected in
+# the diagonal (across the vertex).
+diag_connect: false
+
+#  --regional <bool>
+# Used to indicate that a given latitude-longitude grid should not be periodic
+# in the longitudinal direction.
+regional: false
+
+#  --var <variable> ""
+# A comma-separated list of variables to filter and write to the output.
+var: "_COND(_LAT(),_CURL{8,3}(ua(850hPa),va(850hPa)),_PROD(_CURL{8,3}(ua(850hPa),va(850hPa)),-1))"
+
+#  --varout <string> ""
+# The name(s) of the variable to write to the output file.
+varout: "Cyclonic_Vorticity"
+
+#  --preserve <string> "var1;var2;..."
+# A comma-separated list of variables to copy from the input data to the output
+# data.
+preserve: ""
+
+#  --fillvalue <string> [<value>|nan|att]
+# Add the specified _FillValue attribute to all output variables. If set to
+# att then the value of this attribute will be inherited from the input data,
+# if present.
+fillvalue: ""
+
+#  --timefilter <string> ""
+# A regular expression used to match only those time values to be retained. 
+# Several default values are available as well as follows.
+# 3hr filter every 3 hourly (equivalent to 
+# "....-..-.. (00|03|06|09|12|15|18|21):00:00").
+# 6hr filter every 6 hourly (equivalent to "....-..-.. (00|06|12|18):00:00").
+# daily filter daily (equivalent to "....-..-.. 00:00:00").
+timefilter: "6hr"
+
+#  --latname <string> "lat"
+latname: 'lat'
+
+#  --lonname <string> "lon"
+lonname: 'lon'
+
+#  --logdir <string> "./"
+logdir: './'
