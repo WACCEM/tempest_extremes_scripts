@@ -88,10 +88,10 @@ matching_mode: 'era5_datalake'
 # For the NERSC data lake, the input files for generating lists are quite different
 
 # era5_start_month provides the YYYYMM month to start using the ERA5 data (in range 195001-202412)
-era5_start_month: '201908'
+era5_start_month: '201901'
 
 # era5_final_month provides the YYYYMM month to finish using the ERA5 data (in range 195001-202412)
-era5_final_month: '202103'
+era5_final_month: '202112'
 
 variables_pl:
     - '128_129_z'

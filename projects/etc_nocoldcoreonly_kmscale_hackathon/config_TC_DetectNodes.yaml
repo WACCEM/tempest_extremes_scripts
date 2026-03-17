@@ -33,14 +33,14 @@ maxlat: 0.0
 #  --minabslat <double> [0.0]
 # The minimum absolute value of the latitude for candidate points. This
 # argument has no effect if set to zero.
-minabslat: 20.0
+minabslat: 0.0
 
 #  --mergedist <double> [0.0] (degrees)
 # DetectNodes merges candidate points with a distance (in degrees
 # great-circle-distance) shorter than the specified value. Among two candidates
 # within the merge distance, only the candidate with the lowest value of the
 # --searchbymin field or highest value of the --searchbymax field are retained.
-mergedist: 9.0
+mergedist: 6.0
 
 #  --closedcontourcmd <string> "<cmd1>;<cmd2>;..."
 # Eliminate candidates if they do not have a closed contour. The closed contour
@@ -59,7 +59,7 @@ mergedist: 9.0
 # -> minmaxdist <double> is the great-circle distance away from the candidate 
 #    to search for the minima/maxima. If delta is positive (negative), the 
 #    pivot is a local minimum (maximum).
-closedcontourcmd: "psl,200.0,5.5,0"
+closedcontourcmd: "psl,200.0,5.5,0;_DIFF(zg300,zg500),-6.0,6.5,1.0"
 
 #  --noclosedcontourcmd <string> "<cmd1>;<cmd2>;..."
 # As --closedcontourcmd, except it eliminates candidates if a closed contour 
@@ -89,7 +89,7 @@ thresholdcmd: ''
 #    maxdist, mindist).
 # -> dist <double> is the great-circle distance away from the candidate wherein
 #    the operator is applied.
-outputcmd: psl,min,0;sfcWind,max,2;ELEV,min,0;pr,avg,4;_VECMAG(ua1000,va1000),max,2;_VECMAG(ua925,va925),max,2;_VECMAG(ua850,va850),max,2;_VECMAG(ua700,va700),max,2;_VECMAG(ua500,va500),max,2;_VECMAG(ua300,va300),max,2;_VECMAG(ua250,va250),max,2"
+outputcmd: "psl,min,0;sfcWind,max,2;ELEV,min,0;pr,avg,4"
 
 #  --timefilter <string> ""
 # A regular expression used to match only those time values to be retained. 

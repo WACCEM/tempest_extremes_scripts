@@ -128,7 +128,7 @@ def main():
     config = {}
     
     # Load configuration and generate file lists
-    input_config  = load_config_and_generate_files("projects/etc_nocoldcoreonly_kmscale_hackathon/um2560_io_config.yaml")
+    input_config  = load_config_and_generate_files("projects/kmscale_hackathon/ifs_io_config.yaml")
         
     # Update config with values from input_config
     config = safe_update(config, input_config)
@@ -138,25 +138,25 @@ def main():
     for key in config.keys():
         print(f"{key}:", config[key])
 
-    input_config2 = load_config_and_generate_files("projects/etc_nocoldcoreonly_kmscale_hackathon/um2560_io_config_pt2.yaml")
+    input_config2 = load_config_and_generate_files("projects/kmscale_hackathon/ifs_io_config_pt2.yaml")
     config['input_pr_ws_list'] = input_config2['in_data_list']
 
     # Load the TC yaml files
-    config_TC_DetectNodes     = load_yaml_file('projects/etc_nocoldcoreonly_kmscale_hackathon/config_TC_DetectNodes.yaml')
-    config_TC_StitchNodes     = load_yaml_file('projects/etc_nocoldcoreonly_kmscale_hackathon/config_TC_StitchNodes.yaml')
-    config_TC_NodeFileFilter  = load_yaml_file('projects/etc_nocoldcoreonly_kmscale_hackathon/config_TC_NodeFileFilter.yaml')
-    config_TC_StitchBlobs     = load_yaml_file('projects/etc_nocoldcoreonly_kmscale_hackathon/config_TC_StitchBlobs.yaml')
+    config_TC_DetectNodes     = load_yaml_file('projects/kmscale_hackathon/config_TC_DetectNodes.yaml')
+    config_TC_StitchNodes     = load_yaml_file('projects/kmscale_hackathon/config_TC_StitchNodes.yaml')
+    config_TC_NodeFileFilter  = load_yaml_file('projects/kmscale_hackathon/config_TC_NodeFileFilter.yaml')
+    config_TC_StitchBlobs     = load_yaml_file('projects/kmscale_hackathon/config_TC_StitchBlobs.yaml')
 
     # Load the AR yaml files
-    config_AR_DetectBlobs     = load_yaml_file('projects/etc_nocoldcoreonly_kmscale_hackathon/config_AR_DetectBlobs.yaml')
-    config_AR_NodeFileFilter  = load_yaml_file('projects/etc_nocoldcoreonly_kmscale_hackathon/config_AR_NodeFileFilter.yaml')
-    config_AR_StitchBlobs     = load_yaml_file('projects/etc_nocoldcoreonly_kmscale_hackathon/config_AR_StitchBlobs.yaml')
+    config_AR_DetectBlobs     = load_yaml_file('projects/kmscale_hackathon/config_AR_DetectBlobs.yaml')
+    config_AR_NodeFileFilter  = load_yaml_file('projects/kmscale_hackathon/config_AR_NodeFileFilter.yaml')
+    config_AR_StitchBlobs     = load_yaml_file('projects/kmscale_hackathon/config_AR_StitchBlobs.yaml')
 
     # Load the ETC yaml files
-    config_ETC_DetectNodes    = load_yaml_file('projects/etc_nocoldcoreonly_kmscale_hackathon/config_ETC_DetectNodes.yaml')
-    config_ETC_StitchNodes    = load_yaml_file('projects/etc_nocoldcoreonly_kmscale_hackathon/config_ETC_StitchNodes.yaml')
-    config_ETC_NodeFileFilter = load_yaml_file('projects/etc_nocoldcoreonly_kmscale_hackathon/config_ETC_NodeFileFilter.yaml')
-    config_ETC_StitchBlobs    = load_yaml_file('projects/etc_nocoldcoreonly_kmscale_hackathon/config_ETC_StitchBlobs.yaml')
+    config_ETC_DetectNodes    = load_yaml_file('projects/kmscale_hackathon/config_ETC_DetectNodes.yaml')
+    config_ETC_StitchNodes    = load_yaml_file('projects/kmscale_hackathon/config_ETC_StitchNodes.yaml')
+    config_ETC_NodeFileFilter = load_yaml_file('projects/kmscale_hackathon/config_ETC_NodeFileFilter.yaml')
+    config_ETC_StitchBlobs    = load_yaml_file('projects/kmscale_hackathon/config_ETC_StitchBlobs.yaml')
 
     # Update TC config files with IO stuff 
     config_TC_DetectNodes     = safe_update(config_TC_DetectNodes,     config)
@@ -277,8 +277,8 @@ def main():
     print(config_ETC_StitchBlobs)
     
     # Feature detection flags
-    config['do_detect_tc']    = False
-    config['do_detect_ar']    = False
+    config['do_detect_tc']    = True
+    config['do_detect_ar']    = True
     config['do_detect_etc']   = True
     config['do_file_cleanup'] = True
     

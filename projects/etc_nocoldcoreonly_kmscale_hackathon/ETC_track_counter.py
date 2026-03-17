@@ -119,6 +119,11 @@ def main():
                         help='Use unstructured mesh format (default: True)')
     parser.add_argument('--structured', dest='unstructured', action='store_false',
                         help='Use structured (lat-lon) grid format')
+    parser.add_argument('--gcd_threshold', type=float, default=9.0,
+                        help='Great circle distance threshold in degrees (default: 9)')
+    parser.add_argument('--stormtype', type=str, default='ETC', choices=['ETC', 'TC'],
+                        help='Storm type: ETC or TC (default: ETC)')
+    
     
     # Parse arguments
     args = parser.parse_args()
@@ -126,8 +131,11 @@ def main():
     # Parse storm data with the appropriate mesh type
     storm_df = parse_storm_file(args.storm_file, unstructured_mesh=args.unstructured)
     binary_masks = xr.open_dataset(args.binary_masks_file)
-    
-    binary_masks['ETC_int_tag'] = assign_storm_ids(storm_df, binary_masks)
+
+    gcd_thresh = sphere_distance(lon1=0, lat1=0, lon2=args.gcd_threshold, lat2=0, units='degrees')
+    binary_tag_name = f"{args.stormtype}_binary_tag"
+    int_tag_name = f"{args.stormtype}_int_tag"
+    binary_masks[int_tag_name] = assign_storm_ids(storm_df, binary_masks, tag_name=binary_tag_name, gcd_thresh=gcd_thresh)
     binary_masks.to_netcdf(args.output_file, mode='w')
     
 

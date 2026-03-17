@@ -128,7 +128,7 @@ def main():
     config = {}
     
     # Load configuration and generate file lists
-    input_config  = load_config_and_generate_files("projects/etc_nocoldcoreonly_kmscale_hackathon/um2560_io_config.yaml")
+    input_config  = load_config_and_generate_files("projects/etc_nocoldcoreonly_kmscale_hackathon/um1280_io_config.yaml")
         
     # Update config with values from input_config
     config = safe_update(config, input_config)
@@ -138,7 +138,7 @@ def main():
     for key in config.keys():
         print(f"{key}:", config[key])
 
-    input_config2 = load_config_and_generate_files("projects/etc_nocoldcoreonly_kmscale_hackathon/um2560_io_config_pt2.yaml")
+    input_config2 = load_config_and_generate_files("projects/etc_nocoldcoreonly_kmscale_hackathon/um1280_io_config_pt2.yaml")
     config['input_pr_ws_list'] = input_config2['in_data_list']
 
     # Load the TC yaml files
@@ -277,8 +277,8 @@ def main():
     print(config_ETC_StitchBlobs)
     
     # Feature detection flags
-    config['do_detect_tc']    = False
-    config['do_detect_ar']    = False
+    config['do_detect_tc']    = True
+    config['do_detect_ar']    = True
     config['do_detect_etc']   = True
     config['do_file_cleanup'] = True
     

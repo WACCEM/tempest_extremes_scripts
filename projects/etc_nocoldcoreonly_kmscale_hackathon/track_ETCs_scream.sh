@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --output=track_ETCs_scream.o%j
 #SBATCH --error=track_ETCs_scream.e%j
-#SBATCH --time=0:45:00
+#SBATCH --time=1:45:00
 #SBATCH --qos=regular
 #SBATCH --account=m1867
 #SBATCH --constraint=cpu
@@ -13,11 +13,12 @@
 
 source /global/common/software/e3sm/anaconda_envs/load_latest_e3sm_unified_pm-cpu.sh
 
-cd /pscratch/sd/b/beharrop/kmscale_hackathon/tempest_extremes_scripts/projects/kmscale_hackathon
+cd /pscratch/sd/b/beharrop/kmscale_hackathon/tempest_extremes_scripts/projects/etc_nocoldcoreonly_kmscale_hackathon
 
-datadir=/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/screamv2_ne120_tracking
+datadir=/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/screamv2_ne120_tracking_etc_nocoldcoreonly
 name=screamv2_ne120_hp8_hp8
-storm_file=${datadir}/screamv2_ne120_hp8.etc_stitched_nodes.txt
+etc_file=${datadir}/screamv2_ne120_hp8.etc_stitched_nodes.txt
+tc_file=${datadir}/screamv2_ne120_hp8.tc_stitched_nodes.txt
 
 year=2019
 for month in {08..12}; do
@@ -25,7 +26,10 @@ for month in {08..12}; do
     echo $yyyymm
     bin_masks_file=${datadir}/ETC_filt_nodes_${name}.${yyyymm}.nc
     output_file=${datadir}/ETC_test_tracks_${name}.${yyyymm}.nc
-    python ETC_track_counter.py $storm_file $bin_masks_file $output_file
+    python ETC_track_counter.py $etc_file $bin_masks_file $output_file --gcd_threshold 10.0
+    bin_masks_file=${datadir}/TC_filt_nodes_${name}.${yyyymm}.nc
+    output_file=${datadir}/TC_test_tracks_${name}.${yyyymm}.nc
+    python ETC_track_counter.py $tc_file $bin_masks_file $output_file --gcd_threshold 5.0 --stormtype TC
 done
 
 year=2020
@@ -34,7 +38,10 @@ for month in {01..08}; do
     echo $yyyymm
     bin_masks_file=${datadir}/ETC_filt_nodes_${name}.${yyyymm}.nc
     output_file=${datadir}/ETC_test_tracks_${name}.${yyyymm}.nc
-    python ETC_track_counter.py $storm_file $bin_masks_file $output_file
+    python ETC_track_counter.py $etc_file $bin_masks_file $output_file --gcd_threshold 10.0
+    bin_masks_file=${datadir}/TC_filt_nodes_${name}.${yyyymm}.nc
+    output_file=${datadir}/TC_test_tracks_${name}.${yyyymm}.nc
+    python ETC_track_counter.py $tc_file $bin_masks_file $output_file --gcd_threshold 5.0 --stormtype TC
 done
     
 echo All done

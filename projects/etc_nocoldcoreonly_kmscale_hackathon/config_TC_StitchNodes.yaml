@@ -2,24 +2,24 @@
 # A comma-separated list of names of the auxiliary columns within the input
 # nodefile (namely, the list must not include the indexing columns or time
 # columns).
-in_fmt: "lon,lat,slp,wind,zs,pr,ws1000,ws925,ws850,ws700,ws500,ws300,ws250"
+in_fmt: "lon,lat,slp,wind,zs,pr"
 
 #  --range <double> [0.0]
 # The maximum distance between candidates along a path (in great-circle
 # degrees).
-range: 9.0
+range: 8.0
 
 #  --mintime <string> "1"
 # The minimum length of a path either in terms of number of discrete times or
 # as a duration, e.g., "24h". Note that the duration of a path is computed as
 # the difference between the final time and initial time, so a "24h" duration
 # corresponds to 5 time steps in 6-hourly data (i.e., 0h,6,12,18,24UTC).
-mintime: "24h"
+mintime: "10"
 
 #  --min_endpoint_dist <double> [0.0]
 # The minimum great-circle distance between the first candidate on a path
 # and the last candidate (in degrees).
-min_endpoint_dist: 12.0
+min_endpoint_dist: 0.0
 
 #  --min_path_dist <double> [0.0]
 # The minimum accumulated great-circle distance between nodes in a path
@@ -29,7 +29,7 @@ min_path_dist: 0.0
 #  --maxgap <integer> [0]
 # The number of allowed missing points between spatially proximal candidate
 # nodes while still considering them part of the same path.
-maxgap: 2
+maxgap: 6
 
 #  --threshold <string> "<cmd1>;<cmd2>;..."
 # Filter paths based on the number of times where a particular threshold is
@@ -47,7 +47,7 @@ maxgap: 2
 #    satisfied only at the first point along the path, and "last" is used to
 #    indicate the threshold must be satisfied only at the last point along the
 #    path.
-threshold: ""
+threshold: "wind,>=,10.0,10;lat,<=,50.0,10;lat,>=,-50.0,10;zs,<=,15.0,10"
 
 #  --out_file_format <string> "gfdl" (gfdl|csv|csvnohead)
 # The format of the output nodefile. Options are gfdl (standard GFDL format),

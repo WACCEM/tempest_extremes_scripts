@@ -2,7 +2,7 @@
 # A comma-separated list of names of the auxiliary columns within the input
 # nodefile (namely, the list must not include the indexing columns or time
 # columns).
-in_fmt: "lon,lat,slp,wind,zs,pr,ws1000,ws925,ws850,ws700,ws500,ws300,ws250"
+in_fmt: "lon,lat,slp,wind,zs,pr"
 
 #  --range <double> [0.0]
 # The maximum distance between candidates along a path (in great-circle
