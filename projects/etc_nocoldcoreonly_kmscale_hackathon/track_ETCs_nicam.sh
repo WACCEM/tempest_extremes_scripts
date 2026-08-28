@@ -17,7 +17,7 @@ cd /pscratch/sd/b/beharrop/kmscale_hackathon/tempest_extremes_scripts/projects/e
 
 datadir=/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/nicam_gl11_tracking_etc_nocoldcoreonly
 name=nicam_gl11_hp8_H
-etc_file=${datadir}/nicam_gl11_hp8.etc_stitched_nodes.txt
+etc_file=${datadir}/nicam_gl11_hp8.etc_stitched_nodes.filtered_out_tcs.txt
 tc_file=${datadir}/nicam_gl11_hp8.tc_stitched_nodes.txt
 
 year=2020

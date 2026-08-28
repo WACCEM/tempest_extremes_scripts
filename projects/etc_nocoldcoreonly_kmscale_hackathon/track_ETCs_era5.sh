@@ -17,7 +17,7 @@ cd /pscratch/sd/b/beharrop/kmscale_hackathon/tempest_extremes_scripts/projects/e
 
 datadir=/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/era5_tracking_etc_nocoldcoreonly
 name=era5_ll025sc
-etc_file=${datadir}/era5.etc_stitched_nodes.txt
+etc_file=${datadir}/era5.etc_stitched_nodes.filtered_out_tcs.txt
 tc_file=${datadir}/era5.tc_stitched_nodes.txt
 
 for f in ${datadir}/TC_filt_nodes_${name}.??????????_??????????.nc; do

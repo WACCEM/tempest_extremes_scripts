@@ -17,7 +17,7 @@ cd /pscratch/sd/b/beharrop/kmscale_hackathon/tempest_extremes_scripts/projects/e
 
 datadir=/pscratch/sd/b/beharrop/kmscale_hackathon/hackathon_pre/icon_d3hp003_1year_tracking_etc_nocoldcoreonly
 name=icon_d3hp003_hp8_PT6H
-etc_file=${datadir}/icon_d3hp003_hp8.etc_stitched_nodes.txt
+etc_file=${datadir}/icon_d3hp003_hp8.etc_stitched_nodes.filtered_out_tcs.txt
 tc_file=${datadir}/icon_d3hp003_hp8.tc_stitched_nodes.txt
 
 year=2020
