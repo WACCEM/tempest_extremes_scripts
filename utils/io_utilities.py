@@ -153,6 +153,15 @@ def transform_file_lists(config):
         transform_file_list(config['in_data_list'], config['etc_tracks_list'], config['pattern_match'],
                             prefix=f"{config['output_dir']}ETC_tracks_{config['shortname']}_", suffix=".nc")
 
+    # New files naming convention (need to clean this up in the future)
+    for file_out_list in ['tc_detectnodes_out', 'tc_stitchnodes_out', 'tc_nodefilefilter_out',
+                          'ar_detectblobs_out', 'ar_variableprocessor_out', 'ar_nodefilefilter_out',
+                          'ar_stitchblobs_out', 'ar_blobstats_out',
+                          'etc_detectnodes_out', 'etc_stitchnodes_out', 'etc_nodefilefilter_out']:
+        if file_out_list in config:
+            transform_file_list(config['in_data_list'], config[file_out_list], config['pattern_match'],
+                                prefix=f"{config['output_dir']}{file_out_list[-3:]}{config['shortname']}_", suffix=".txt")
+
 def process_file(file_name, config, drop_vars=["lon", "lat"]):
     # Check that the file exists
     if not os.path.exists(file_name):

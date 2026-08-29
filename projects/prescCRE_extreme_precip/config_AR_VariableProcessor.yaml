@@ -1,0 +1,51 @@
+# --preserve <string> "var1;var2;..."
+# A comma-separated list of variables to copy from the input data to the 
+# output data.
+preserve: ""
+
+# --var <variable> ""
+# A comma-separated list of variables to filter and write to the output.
+var: "_PROD(PRECT,AR_binary_tag),_PROD(_VEGMAG(TUQ,TVQ),AR_binary_tag),_PROD(FLUT,AR_binary_tag),_PROD(TMQ,AR_binary_tag),_PROD(U10,AR_binary_tag)"
+
+# --varout <variable> ""
+# An optional comma-separated list of variables of the same length as --var 
+# that replaces these variables in the output data. This argument is useful 
+# if the input variables are the product of functional operations and using 
+# function names as NetCDF variables is undesired. By default this argument 
+# is identical to --var.
+varout: "AR_PRECT,AR_IVT,AR_FLUT,AR_TMQ,AR_U10"
+
+#  --timefilter <string> ""
+# A regular expression used to match only those time values to be retained.
+# Default values:
+# -> 3hr: Filter every 3 hourly (equivalent to "....-..-.. (00|03|06|09|12|15|18|21):00:00").
+# -> 6hr: Filter every 6 hourly (equivalent to "....-..-.. (00|06|12|18):00:00").
+# -> daily: Filter daily (equivalent to "....-..-.. 00:00:00").
+timefilter: "6hr"
+
+# --fillvalue <string> [<value>|nan|att]
+# Add the specified _FillValue attribute to all output variables. If set to 
+# att then the value of this attribute will be inherited from the input data, 
+# if present.
+fillvalue: ""
+
+#  --diag_connect <bool>
+# When the data is on a structured grid, consider grid cells to be connected in
+# the diagonal (across the vertex).
+diag_connect: false
+
+#  --regional <bool>
+# Used to indicate that a given latitude-longitude grid should not be periodic
+# in the longitudinal direction.
+regional: false
+
+#  --lonname <string> "lon"
+# Name of the longitude variable in the data files.
+lonname: "lon"
+
+#  --latname <string> "lat"
+# Name of the latitude variable in the data files.
+latname: "lat"
+
+#  --logdir <string> "."
+logdir: '.'
