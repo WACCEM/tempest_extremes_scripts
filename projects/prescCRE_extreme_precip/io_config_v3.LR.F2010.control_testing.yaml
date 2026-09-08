@@ -1,0 +1,219 @@
+# shortname <string>
+# Specify a name to use for naming files (required)
+shortname: 'v3.LR.F2010.control'
+
+# output_dir <string>
+# Specify the path to save files to (required)
+#output_dir: '/compyfs/harr152/E3SMv3/F2010/v3.LR.F2010.control/post/atm/native/tracking/storms/'
+output_dir: '/pscratch/sd/b/beharrop/E3SMv3/v3.LR.F2010.control/post/atm/native/tracking/storms/'
+
+# --in_data <string> ""
+# A list of input data files in NetCDF format, separated by semicolons.
+in_data: ''
+
+#  --in_data_list <string> ""
+# A text file containing the --in_data argument for a sequence of processing
+# operations (one per line). When parallelization is enabled, the list of data
+# files are distributed as equally as possible among available processors.
+#in_data_list: '/compyfs/harr152/E3SMv3/F2010/v3.LR.F2010.control/post/atm/native/tracking/storms/v3.LR.F2010.control.input.txt'
+in_data_list: '/pscratch/sd/b/beharrop/E3SMv3/v3.LR.F2010.control/post/atm/native/tracking/storms/v3.LR.F2010.control.input.txt'
+
+# --in <string> ""
+# The input nodefile (typically output from from DetectNodes).
+in: ''
+
+# --in_file <string> ""
+# The input file for BlobStats
+in_file: ''
+
+# --in_nodefile <string> ""
+# The filename of the input nodefile (typically output from
+# DetectNodes or StitchNodes).
+in_nodefile: ''
+
+#  --in_nodefile_type <string> ["SN"] [DN|SN]
+# The type of nodefile indicated by --in_nodefile: "DN" if from DetectNodes
+# or "SN" if from StitchNodes.
+in_nodefile_type: ''
+
+#  --in_list <string> ""
+# A text file containing a list of input data files.
+in_list: ''
+
+#  --in_connect <string> ""
+#A connectivity file that describes the unstructured grid.
+#in_connect: '/qfs/people/harr152/TempestExtremes/connectivity_files/connect_CSne30pg2.txt'
+in_connect: '/global/cfs/cdirs/wcm_shr/beharrop/TempestExtremes/connectivity_files/connect_CSne30pg2.txt'
+
+#  --diag_connect <bool>
+# When the data is on a structured grid, consider grid cells to be connected in
+# the diagonal (across the vertex).
+diag_connect: ''
+
+# The following output stuff is set dynamically by the script... consider removing
+
+#  --out <string> ""
+# The output nodefile to write from the detection procedure.
+# Used when --in_data is specified.
+out: ''
+
+#  --out_file_list <string> ""
+# A text file containing an equal number of lines to --in_data_list specifying
+# the output nodefiles from each input datafile.
+out_file_list: ''
+
+# --out_list <string> ""
+# A text file containing, one per line, a list of output NetCDF files corresponding to the input files specified in --in_list or --in_data_list
+out_list: ''
+
+# --out_data_list <string> ""
+# A list of output data files, of the corresponding output for each file of --in_data_list
+out_data_list: ''
+
+# --out_data <string> ""
+# The output data file
+out_data: ''
+
+# The following arguments are not inputs directly to TE binaries
+
+# patterns lists the types where there are multiple files
+patterns:
+    - '/pscratch/sd/b/beharrop/E3SMv3/v3.LR.F2010.control/archive/atm/hist/v3.LR.F2010.control.eam.h2.????-??-??-00000.nc'
+    #- '/compyfs/harr152/E3SMv3/F2010/v3.LR.F2010.control/archive/atm/hist/v3.LR.F2010.control.eam.h2.????-??-??-00000.nc'
+
+# pattern match specifies the pattern that changes between each file
+pattern_match: '(eam.h2.\d{4}-\d{2}-\d{2}-\d{5})'  # Regular expression
+
+# a static file can be used for time invariant variables like elevation that may need to be specified, but exist in a single file
+# with append_static_file false it is attached per-step by naming it in a recipe
+# static_file: '/qfs/people/harr152/TempestExtremes/topo_files/E3SMv3.ne30pg2.PHIS.nc'
+static_file: '/global/cfs/cdirs/m1867/beharrop/TempestExtremes/E3SMv3.ne30pg2.PHIS.nc'
+
+# append_static_file - when true static_file is appended to every line of in_data_list
+append_static_file: false
+
+# static_files - additional time-invariant files, each usable as a recipe token
+static_files: {}
+
+# file cleanup arguments
+do_file_cleanup: true
+
+# do_append_crs - appends healpix metadata to all files
+do_append_crs: false
+
+# do_unify_dimensions - if both cell and ncol are created, then rename ncol to cell
+do_unify_dimensions: false
+
+# do_open_permissions - opens up read permissions for all users
+do_open_permissions: true
+
+# do_clobber - delete the files each recipe is about to produce before running
+do_clobber: true
+
+# Processing recipes
+#
+# Each `{FEATURE}_steps` key lists, in execution order, the TempestExtremes
+# binaries to run for that feature. Features run in the order declared here.
+#
+# Each step declares its file arguments with `{FEATURE}_{Binary}_{te_arg}` keys,
+# where `te_arg` is the TempestExtremes flag name. Arguments ending in `_list`
+# (and `in_list`) name file lists; everything else names a single file.
+#
+# The value is a token, or several tokens separated by semicolons. The reserved
+# token `in_data_list` refers to the input list generated from `patterns`, and
+# `static_file` (plus any name in `static_files`) refers to a time-invariant
+# file that is repeated on every line. Any other token names a file produced by
+# a step; its extension sets the extension of the per-timestep files in the
+# generated list. Multiple tokens on a list argument are merged line-by-line so
+# TE receives semicolon separated inputs.
+#
+# `_config` gives the step's parameter YAML, `_srun` and `_num_procs` control
+# how the command is launched.
+
+do_detect_tc: true
+TC_steps: 'DetectNodes; StitchNodes; NodeFileFilter'
+
+TC_DetectNodes_in_data_list: 'in_data_list;static_file'
+TC_DetectNodes_out_file_list: 'tc_detectnodes_out.txt'
+TC_DetectNodes_in_data: ''
+TC_DetectNodes_out: ''
+TC_DetectNodes_config: 'projects/prescCRE_extreme_precip/config_TC_DetectNodes.yaml'
+TC_DetectNodes_srun: true
+
+TC_StitchNodes_in_list: 'tc_detectnodes_out.txt'
+TC_StitchNodes_in: ''
+TC_StitchNodes_out: 'tc_stitchnodes_out.txt'
+TC_StitchNodes_config: 'projects/prescCRE_extreme_precip/config_TC_StitchNodes.yaml'
+TC_StitchNodes_srun: false
+
+TC_NodeFileFilter_in_data_list: 'in_data_list'
+TC_NodeFileFilter_in_nodefile: 'tc_stitchnodes_out.txt'
+TC_NodeFileFilter_out_data_list: 'tc_nodefilefilter_out.nc'
+TC_NodeFileFilter_in_data: ''
+TC_NodeFileFilter_out_data: ''
+TC_NodeFileFilter_config: 'projects/prescCRE_extreme_precip/config_TC_NodeFileFilter.yaml'
+TC_NodeFileFilter_srun: true
+
+do_detect_ar: true
+AR_steps: 'DetectBlobs; VariableProcessor; NodeFileFilter; StitchBlobs; BlobStats'
+
+AR_DetectBlobs_in_data_list: 'in_data_list'
+AR_DetectBlobs_out_list: 'ar_detectblobs_out.nc'
+AR_DetectBlobs_in_data: ''
+AR_DetectBlobs_out: ''
+AR_DetectBlobs_config: 'projects/prescCRE_extreme_precip/config_AR_DetectBlobs.yaml'
+AR_DetectBlobs_srun: true
+
+AR_VariableProcessor_in_data_list: 'in_data_list;ar_detectblobs_out.nc'
+AR_VariableProcessor_out_data_list: 'ar_variableprocessor_out.nc'
+AR_VariableProcessor_in_data: ''
+AR_VariableProcessor_out_data: ''
+AR_VariableProcessor_config: 'projects/prescCRE_extreme_precip/config_AR_VariableProcessor.yaml'
+AR_VariableProcessor_srun: true
+
+AR_NodeFileFilter_in_data_list: 'ar_variableprocessor_out.nc'
+AR_NodeFileFilter_in_nodefile: 'tc_stitchnodes_out.txt'
+AR_NodeFileFilter_out_data_list: 'ar_nodefilefilter_out.nc'
+AR_NodeFileFilter_in_data: ''
+AR_NodeFileFilter_out_data: ''
+AR_NodeFileFilter_config: 'projects/prescCRE_extreme_precip/config_AR_NodeFileFilter.yaml'
+AR_NodeFileFilter_srun: true
+
+AR_StitchBlobs_in_list: 'ar_nodefilefilter_out.nc'
+AR_StitchBlobs_out_list: 'ar_stitchblobs_out.nc'
+AR_StitchBlobs_in: ''
+AR_StitchBlobs_out: ''
+AR_StitchBlobs_config: 'projects/prescCRE_extreme_precip/config_AR_StitchBlobs.yaml'
+AR_StitchBlobs_srun: true
+AR_StitchBlobs_num_procs: 1
+
+AR_BlobStats_in_list: 'ar_stitchblobs_out.nc;ar_variableprocessor_out.nc'
+AR_BlobStats_in_file: ''
+AR_BlobStats_out_file: 'ar_blobstats_out.txt'
+AR_BlobStats_config: 'projects/prescCRE_extreme_precip/config_AR_BlobStats.yaml'
+AR_BlobStats_srun: true
+AR_BlobStats_num_procs: 1
+
+do_detect_etc: true
+ETC_steps: 'DetectNodes; StitchNodes; NodeFileFilter'
+
+ETC_DetectNodes_in_data_list: 'in_data_list;static_file'
+ETC_DetectNodes_out_file_list: 'etc_detectnodes_out.txt'
+ETC_DetectNodes_in_data: ''
+ETC_DetectNodes_out: ''
+ETC_DetectNodes_config: 'projects/prescCRE_extreme_precip/config_ETC_DetectNodes.yaml'
+ETC_DetectNodes_srun: true
+
+ETC_StitchNodes_in_list: 'etc_detectnodes_out.txt'
+ETC_StitchNodes_in: ''
+ETC_StitchNodes_out: 'etc_stitchnodes_out.txt'
+ETC_StitchNodes_config: 'projects/prescCRE_extreme_precip/config_ETC_StitchNodes.yaml'
+ETC_StitchNodes_srun: false
+
+ETC_NodeFileFilter_in_data_list: 'in_data_list'
+ETC_NodeFileFilter_in_nodefile: 'etc_stitchnodes_out.txt'
+ETC_NodeFileFilter_out_data_list: 'etc_nodefilefilter_out.nc'
+ETC_NodeFileFilter_in_data: ''
+ETC_NodeFileFilter_out_data: ''
+ETC_NodeFileFilter_config: 'projects/prescCRE_extreme_precip/config_ETC_NodeFileFilter.yaml'
+ETC_NodeFileFilter_srun: true

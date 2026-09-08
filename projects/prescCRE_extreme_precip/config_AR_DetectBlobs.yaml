@@ -37,7 +37,7 @@ geofiltercmd: "area,>,850000km2"
 # form "var,varout" with the following arguments:
 # -> var <variable>: Input variable used for output.
 # -> varout <string>: Name of the variable to write in the output file.
-outputcmd: "PRECT,PRECT;TUQ,TUQ;TVQ,TVQ"
+outputcmd: ""
 
 #  --timefilter <string> ""
 # A regular expression used to match only those time values to be retained.

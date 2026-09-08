@@ -4,9 +4,19 @@ import os
 import subprocess
 import sys
 import shutil
-from utils.list_files_for_TE import generate_file_list, transform_file_list
+from utils.list_files_for_TE import generate_file_list, transform_file_list, merge_file_lists
+import utils.build_TE_commands as build_TE_commands
 import yaml
 from concurrent.futures import ThreadPoolExecutor
+
+# Recipe keys that configure a step rather than name a TempestExtremes argument
+RECIPE_META_SUFFIXES = ('config', 'srun', 'num_procs')
+
+# Token that refers back to the top-level input file list
+IN_DATA_LIST_TOKEN = 'in_data_list'
+
+# Token that refers to the top-level time-invariant file
+STATIC_FILE_TOKEN = 'static_file'
 
 def run_command(cmd, use_srun=False, num_procs=None, machine='perlmutter'):
     """Run a shell command, optionally using srun with specified number of processes."""
@@ -161,6 +171,286 @@ def transform_file_lists(config):
         if file_out_list in config:
             transform_file_list(config['in_data_list'], config[file_out_list], config['pattern_match'],
                                 prefix=f"{config['output_dir']}{file_out_list[-3:]}{config['shortname']}_", suffix=".txt")
+
+def _is_list_arg(arg):
+    """A TempestExtremes argument names a file list when it ends in _list."""
+    return arg == 'in_list' or arg.endswith('_list')
+
+def static_file_path(token, config):
+    """
+    Return the path for a time-invariant file token, or None if not one.
+
+    `static_file` is reserved for the top-level key of that name; any other name
+    is looked up in the optional `static_files` mapping.
+
+    Args:
+        token (str): The recipe token
+        config (dict): The loaded io configuration
+
+    Returns:
+        str or None: The resolved path, or None if the token is not static
+    """
+    if token == STATIC_FILE_TOKEN:
+        return config.get('static_file') or None
+    return (config.get('static_files') or {}).get(token)
+
+def parse_recipe(config):
+    """
+    Parse the processing recipes declared in an io config.
+
+    A recipe is declared with a `{FEATURE}_steps` key holding a semicolon
+    separated, ordered list of TempestExtremes binaries. Each step then declares
+    its file arguments with `{FEATURE}_{Binary}_{te_arg}` keys, so the TE flag
+    name is stated explicitly rather than inferred.
+
+    Args:
+        config (dict): The loaded io configuration
+
+    Returns:
+        dict: {feature: [(binary, {te_arg: token_string}), ...]} in declaration order
+    """
+    recipes = {}
+    for key, value in config.items():
+        if not key.endswith('_steps') or not value:
+            continue
+        feature = key[:-len('_steps')]
+        steps = []
+        for binary in [s.strip() for s in str(value).split(';') if s.strip()]:
+            prefix = f"{feature}_{binary}_"
+            args = {}
+            for arg_key, arg_value in config.items():
+                if not arg_key.startswith(prefix) or not arg_value:
+                    continue
+                arg = arg_key[len(prefix):]
+                if arg in RECIPE_META_SUFFIXES:
+                    continue
+                args[arg] = arg_value
+            steps.append((binary, args))
+        recipes[feature] = steps
+    return recipes
+
+def resolve_token(token, config, is_list_arg):
+    """
+    Resolve a recipe token to a concrete path.
+
+    `in_data_list` is a reserved shorthand for the top-level input file list,
+    and `static_file` plus any name in `static_files` resolve to a single
+    time-invariant file. Any other token names a file produced by an earlier
+    step: for a list argument it resolves to the list file holding one entry
+    per input file, otherwise to a single output file.
+
+    Args:
+        token (str): The recipe token, e.g. 'ar_detectblobs_out.nc'
+        config (dict): The loaded io configuration
+        is_list_arg (bool): Whether the token is bound to a file-list argument
+
+    Returns:
+        str: The resolved absolute path
+    """
+    if token == IN_DATA_LIST_TOKEN:
+        return config['in_data_list']
+
+    static_path = static_file_path(token, config)
+    if static_path:
+        return static_path
+
+    stem, _ = os.path.splitext(token)
+    name = f"{config['shortname']}.{stem}.txt" if is_list_arg else f"{config['shortname']}.{token}"
+    return os.path.join(config['output_dir'], name)
+
+def materialize_recipe_lists(config):
+    """
+    Build every file list required by the recipes in `config`.
+
+    Walks the recipes in declaration order. Output list tokens are expanded into
+    one entry per input file with `transform_file_list`; input arguments naming
+    several tokens are combined line-by-line with `merge_file_lists` so that
+    TempestExtremes receives semicolon separated inputs.
+
+    Args:
+        config (dict): The loaded io configuration
+
+    Returns:
+        tuple: (resolved, artifacts) where `resolved` is
+            {feature: [(binary, {te_arg: path}), ...]} and `artifacts` records the
+            generated lists and single-file outputs for clobbering.
+    """
+    recipes = parse_recipe(config)
+    registry = {}
+    artifacts = {'entry_lists': [], 'merged_lists': [], 'single_outputs': []}
+    resolved = {}
+
+    for feature, steps in recipes.items():
+        resolved_steps = []
+        for binary, args in steps:
+            resolved_args = {}
+            for arg, token_string in args.items():
+                tokens = [t.strip() for t in str(token_string).split(';') if t.strip()]
+                if not tokens:
+                    continue
+
+                if not _is_list_arg(arg):
+                    if len(tokens) > 1:
+                        raise ValueError(
+                            f"{feature}_{binary}_{arg} names {len(tokens)} tokens but "
+                            f"'{arg}' is a single-file argument."
+                        )
+                    path = resolve_token(tokens[0], config, False)
+                    if (arg.startswith('out') and tokens[0] != IN_DATA_LIST_TOKEN
+                            and not static_file_path(tokens[0], config)):
+                        artifacts['single_outputs'].append(path)
+                    resolved_args[arg] = path
+                    continue
+
+                paths = []
+                sources = []
+                for token in tokens:
+                    path = resolve_token(token, config, True)
+                    if static_file_path(token, config):
+                        sources.append(('literal', path))
+                        paths.append(path)
+                        continue
+                    if token != IN_DATA_LIST_TOKEN and token not in registry:
+                        stem, ext = os.path.splitext(token)
+                        transform_file_list(
+                            config['in_data_list'], path, config['pattern_match'],
+                            prefix=f"{config['output_dir']}{config['shortname']}.{stem}_",
+                            suffix=ext,
+                        )
+                        registry[token] = path
+                        artifacts['entry_lists'].append(path)
+                    sources.append(('list', path))
+                    paths.append(path)
+
+                if len(sources) == 1 and sources[0][0] == 'list':
+                    resolved_args[arg] = paths[0]
+                else:
+                    merged = os.path.join(
+                        config['output_dir'], f"{config['shortname']}.{feature}_{binary}_{arg}.txt"
+                    )
+                    merge_file_lists(sources, merged)
+                    artifacts['merged_lists'].append(merged)
+                    resolved_args[arg] = merged
+
+            resolved_steps.append((binary, resolved_args))
+        resolved[feature] = resolved_steps
+
+    return resolved, artifacts
+
+def clobber_recipe_outputs(config, artifacts):
+    """
+    Delete the files the recipes are about to produce, for a clean rerun.
+
+    Only files named inside generated output lists and single-file outputs are
+    removed; the input data referenced by merged input lists is never touched.
+
+    Args:
+        config (dict): The loaded io configuration
+        artifacts (dict): The artifact record from `materialize_recipe_lists`
+    """
+    if not config.get('do_clobber', False):
+        return
+
+    stale = list(artifacts['single_outputs'])
+    for list_path in artifacts['entry_lists']:
+        if not os.path.exists(list_path):
+            continue
+        with open(list_path, 'r') as f:
+            for line in f:
+                stale.extend(entry for entry in line.strip().split(';') if entry)
+
+    removed = 0
+    for path in stale:
+        if os.path.exists(path):
+            os.remove(path)
+            removed += 1
+    print(f"Clobbered {removed} existing output files.")
+
+def run_recipe(config, feature, resolved_steps, dry_run=False):
+    """
+    Run every step of one feature's recipe in order.
+
+    Args:
+        config (dict): The loaded io configuration
+        feature (str): The recipe name, e.g. 'TC'
+        resolved_steps (list): [(binary, {te_arg: path}), ...] from `materialize_recipe_lists`
+        dry_run (bool): Print the assembled commands instead of running them
+    """
+    if not config.get(f'do_detect_{feature.lower()}', True):
+        print(f"\n----- Skipping {feature} -----\n")
+        return
+
+    print(f"\n----- Starting {feature} -----\n")
+    for binary, resolved_args in resolved_steps:
+        step_config = {}
+        step_config_file = config.get(f'{feature}_{binary}_config')
+        if step_config_file:
+            step_config = load_yaml_file(step_config_file)
+        step_config = safe_update(dict(step_config), config)
+        step_config.update(resolved_args)
+
+        cmd = getattr(build_TE_commands, f'build_{binary}_command')(step_config)
+        if dry_run:
+            print(f"[dry run] {' '.join(str(item) for item in cmd)}")
+            continue
+        run_command(cmd,
+                    use_srun=config.get(f'{feature}_{binary}_srun', True),
+                    num_procs=config.get(f'{feature}_{binary}_num_procs', None))
+
+    print(f"\n----- {feature} Complete -----\n")
+
+def run_recipes(config, dry_run=False):
+    """
+    Materialize every recipe file list, optionally clobber, then run all recipes.
+
+    Args:
+        config (dict): The loaded io configuration
+        dry_run (bool): Print the assembled commands instead of running them
+
+    Returns:
+        tuple: (resolved, artifacts) from `materialize_recipe_lists`
+    """
+    resolved, artifacts = materialize_recipe_lists(config)
+    clobber_recipe_outputs(config, artifacts)
+    for feature, resolved_steps in resolved.items():
+        run_recipe(config, feature, resolved_steps, dry_run=dry_run)
+    return resolved, artifacts
+
+def file_cleanup_recipe(config, artifacts, drop_vars=['lon', 'lat'], max_workers=64):
+    """
+    Post-process the files produced by the recipes.
+
+    NetCDF outputs go through `process_file_list`; text outputs only get their
+    permissions opened up.
+
+    Args:
+        config (dict): The loaded io configuration
+        artifacts (dict): The artifact record from `materialize_recipe_lists`
+        drop_vars (list): Variables to drop when unifying dimensions
+        max_workers (int): Thread pool size for parallel processing
+    """
+    if not config.get('do_file_cleanup', False):
+        print("\n----- Skipping File Cleanup -----\n")
+        return
+
+    print("\n----- Starting File Cleanup -----\n")
+    outputs = list(artifacts['single_outputs'])
+    for list_path in artifacts['entry_lists']:
+        if not os.path.exists(list_path):
+            continue
+        with open(list_path, 'r') as f:
+            outputs.extend(line.strip() for line in f if line.strip())
+
+    netcdf_files = [path for path in outputs
+                    if path.endswith('.nc') and os.path.exists(path)]
+    process_file_list(netcdf_files, config, drop_vars=drop_vars, max_workers=max_workers)
+
+    if config.get('do_open_permissions', False):
+        for path in outputs:
+            if not path.endswith('.nc') and os.path.exists(path):
+                os.chmod(path, 0o644)
+
+    print("\n----- File Cleanup Complete -----\n")
 
 def process_file(file_name, config, drop_vars=["lon", "lat"]):
     # Check that the file exists

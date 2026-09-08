@@ -25,6 +25,10 @@ def generate_file_list(output_file, input_config):
     era5_start_month = input_config.get('era5_start_month', '195001')
     era5_final_month = input_config.get('era5_final_month', '202412')
 
+    # When false the static file is attached per-step by a recipe instead
+    if not input_config.get('append_static_file', True):
+        static_file = None
+
     # Collect all files by pattern
     all_files = []
     for pattern in patterns:
@@ -196,6 +200,57 @@ def transform_file_list(input_file, output_file, identifier_regex, prefix="", su
     else:
         print("No transforms generated.")
 
+def merge_file_lists(sources, output_file, separator=';'):
+    """
+    Merge several sources line-by-line into a single file list.
+
+    Line N of the output is the separator-joined concatenation of line N from
+    each source, which is the form TempestExtremes expects for multi-file
+    inputs.
+
+    Args:
+        sources (list): Ordered (kind, path) tuples. kind 'list' expands the
+            file list at path one line at a time; kind 'literal' repeats path
+            on every line, which is how time-invariant files are attached.
+        output_file (str): Path to the merged file list to write
+        separator (str): Separator placed between entries on each line
+    """
+    if not sources:
+        raise ValueError("merge_file_lists requires at least one source.")
+
+    columns = []
+    for kind, path in sources:
+        if kind == 'literal':
+            columns.append(None)
+            continue
+        if kind != 'list':
+            raise ValueError(f"Unknown merge source kind '{kind}' for {path}.")
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"Input file list {path} not found.")
+        with open(path, 'r') as f:
+            columns.append([line.strip() for line in f if line.strip()])
+
+    line_counts = [len(c) for c in columns if c is not None]
+    if not line_counts:
+        raise ValueError("merge_file_lists requires at least one file list source.")
+    if len(set(line_counts)) > 1:
+        details = ', '.join(f"{path} ({len(col)} lines)"
+                            for (_, path), col in zip(sources, columns) if col is not None)
+        raise ValueError(f"Cannot merge file lists with differing line counts: {details}")
+
+    n_lines = line_counts[0]
+    with open(output_file, 'w') as f:
+        for i in range(n_lines):
+            entries = [path if col is None else col[i]
+                       for (_, path), col in zip(sources, columns)]
+            f.write(separator.join(entries) + '\n')
+
+    print(f"Merged {len(sources)} sources into {output_file} ({n_lines} lines)")
+    if n_lines:
+        example = [path if col is None else col[0]
+                   for (_, path), col in zip(sources, columns)]
+        print(f"Example line: {separator.join(example)}")
+
 def main():
     parser = argparse.ArgumentParser(description='Generate or transform file lists for processing.')
     subparsers = parser.add_subparsers(dest='command')
@@ -221,13 +276,26 @@ def main():
                              help='Regular expression with a capture group to extract identifiers')
     trans_parser.add_argument('--prefix', default='', help='Text to add before the identifier')
     trans_parser.add_argument('--suffix', default='', help='Text to add after the identifier')
-    
+
+    # Subparser for merging several file lists into one
+    merge_parser = subparsers.add_parser('merge',
+                                         help='Merge several file lists line-by-line')
+    merge_parser.add_argument('--inputs', required=True, nargs='+',
+                              help='File lists to merge, in the desired order')
+    merge_parser.add_argument('--append', nargs='+', default=[],
+                              help='Single files repeated on every line, appended after --inputs')
+    merge_parser.add_argument('--output', required=True, help='Merged output file list')
+    merge_parser.add_argument('--separator', default=';', help='Separator between entries on a line')
+
     args = parser.parse_args()
     
     if args.command == 'generate':
         generate_file_list(args.patterns, args.output, args.regex, args.static_file, args.matching_mode)
     elif args.command == 'transform':
         transform_file_list(args.input, args.output, args.regex, args.prefix, args.suffix)
+    elif args.command == 'merge':
+        sources = [('list', p) for p in args.inputs] + [('literal', p) for p in args.append]
+        merge_file_lists(sources, args.output, args.separator)
     else:
         parser.print_help()
 
