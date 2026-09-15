@@ -1,0 +1,92 @@
+#  --diag_connect <bool>
+# When the data is on a structured grid, consider grid cells to be connected
+# in the diagonal (across the vertex).
+diag_connect: false
+
+#  --var <variable> ""
+# The name of the variable in the input file providing the binary tag.
+var: "AR_binary_tag"
+
+#  --outvar <string> ""
+# The name of the variable in the output file to contain the global feature ID.
+outvar: "AR_count_index"
+
+#  --minsize <integer> [1]
+# The minimum number of grid points per time slice for a given areal feature.
+minsize: 1
+
+#  --mintime <integer> [1]
+# The minimum number of time slices for a given tracked area feature. Features
+# that are not present for at least --mintime are removed.
+mintime: "1d"
+
+#  --min_overlap_prev <double> [0.0] (%)
+# Minimum fractional area of the feature at time t1 that must be overlapped by
+# the feature at time t2 to be considered connected in time.
+min_overlap_prev: 20.0
+
+#  --max_overlap_prev <double> [100.0] (%)
+# Maximum fractional area of the feature at time t1 that must be overlapped by
+# the feature at time t2 to be considered connected in time.
+max_overlap_prev: 100.0
+
+#  --min_overlap_next <double> [0.0] (%)
+# Minimum fractional area of the feature at time t2 that must be overlapped by
+# the feature at time t1 to be considered connected in time.
+min_overlap_next: 0.0
+
+#  --max_overlap_next <double> [100.0] (%)
+# Maximum fractional area of the feature at time t2 that must be overlapped by
+# the feature at time t1 to be considered connected in time.
+max_overlap_next: 100.0
+
+#  --restrict_region <string> "lat0,lat1,lon0,lon1,count"
+# Filter out blobs that are not present in the specified longitude-latitude
+# region [lon0,lon1]x[lat0,lat1] for at least count time slices.
+restrict_region: ""
+
+#  --regional <bool>
+# Used to indicate that a given latitude-longitude grid should not be periodic
+# in the longitudinal direction.
+regional: false
+
+#  --minlat <double> [-90.0]
+# The minimum latitude for tagged points.
+minlat: -90.0
+
+#  --maxlat <double> [90.0]
+# The maximum latitude for tagged points. If --maxlat and --minlat are equal,
+# then these arguments are ignored.
+maxlat: 90.0
+
+#  --minlon <double> [0.0]
+# The minimum longitude for tagged points.
+minlon: 0.0
+
+#  --maxlon <double> [360.0]
+# The maximum longitude for tagged points. If --maxlon and --minlon are equal,
+# then these arguments are ignored.
+maxlon: 360.0
+
+#  --lonname <string> "lon"
+# Name of the longitude variable in the data files.
+lonname: "longitude"
+
+#  --latname <string> "lat"
+# Name of the latitude variable in the data files.
+latname: "latitude"
+
+#  --thresholdcmd <string> "<cmd1>;<cmd2>;..."
+# Filter out areal features that do not satisfy a given threshold at each time
+# slice. Thresholds are specified as "quantity,value". The arguments are:
+# -> quantity <string>: One of minarea/maxarea (minimum/maximum area in
+#    steradians) or minarealfraction/maxarealfraction
+#    (minimum/maximum fraction of a longitude-latitude grid box covered by
+#    feature).
+# -> value <double>: Numerical value associated with the quantity.
+thresholdcmd: ""
+
+#  --flatten
+# Instead of outputting global identifiers, output a binary value to indicate
+# the presence of a stitched object.
+flatten: false

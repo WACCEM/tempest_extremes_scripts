@@ -1,0 +1,20 @@
+variables:
+
+  - name: u10m
+    short_name: 10u
+    long_name: 10 metre U wind component
+    type_of_level: heightAboveGround
+    level: 10.
+
+  - name: v10m
+    short_name: 10v
+    long_name: 10 metre V wind component
+    type_of_level: heightAboveGround
+    level: 10.
+
+  - name: mslp
+    short_name: mslma
+    long_name: Mean sea level pressure
+    type_of_level: meanSea
+    level: 0
+
