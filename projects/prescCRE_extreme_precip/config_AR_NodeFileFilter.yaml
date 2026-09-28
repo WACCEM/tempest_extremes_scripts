@@ -19,7 +19,7 @@ regional: false
 
 #  --var <variable> ""
 # A comma-separated list of variables to filter and write to the output.
-var: "AR_binary_tag"
+var: "AR_PRECT,AR_IVT,AR_FLUT,AR_TMQ,AR_U10,AR_binary_tag"
 
 #  --maskvar <string> ""
 # The name of the variable to write to the output file containing the binary
